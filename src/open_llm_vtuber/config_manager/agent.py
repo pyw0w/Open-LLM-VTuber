@@ -38,22 +38,27 @@ class BasicMemoryAgentConfig(I18nMixin, BaseModel):
         "llm_provider": Description(
             en="LLM provider to use for this agent",
             zh="Basic Memory Agent 智能体使用的大语言模型选项",
+            ru="Провайдер LLM для использования в этом агенте",
         ),
         "faster_first_response": Description(
             en="Whether to respond as soon as encountering a comma in the first sentence to reduce latency (default: True)",
             zh="是否在第一句回应时遇上逗号就直接生成音频以减少首句延迟（默认：True）",
+            ru="Отвечать ли сразу при встрече запятой в первом предложении для уменьшения задержки (по умолчанию: True)",
         ),
         "segment_method": Description(
             en="Method for segmenting sentences: 'regex' or 'pysbd' (default: 'pysbd')",
             zh="分割句子的方法：'regex' 或 'pysbd'（默认：'pysbd'）",
+            ru="Метод разделения предложений: 'regex' или 'pysbd' (по умолчанию: 'pysbd')",
         ),
         "use_mcpp": Description(
             en="Whether to use MCP (Model Context Protocol) for the agent (default: True)",
             zh="是否使用为智能体启用 MCP (Model Context Protocol) Plus（默认：False）",
+            ru="Использовать ли MCP (Model Context Protocol) для агента (по умолчанию: True)",
         ),
         "mcp_enabled_servers": Description(
             en="List of MCP servers to enable for the agent",
             zh="为智能体启用 MCP 服务器列表",
+            ru="Список MCP серверов для включения для агента",
         ),
     }
 
@@ -66,10 +71,14 @@ class Mem0VectorStoreConfig(I18nMixin, BaseModel):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "provider": Description(
-            en="Vector store provider (e.g., qdrant)", zh="向量存储提供者（如 qdrant）"
+            en="Vector store provider (e.g., qdrant)",
+            zh="向量存储提供者（如 qdrant）",
+            ru="Провайдер векторного хранилища (например, qdrant)",
         ),
         "config": Description(
-            en="Provider-specific configuration", zh="提供者特定配置"
+            en="Provider-specific configuration",
+            zh="提供者特定配置",
+            ru="Конфигурация, специфичная для провайдера",
         ),
     }
 
@@ -81,9 +90,15 @@ class Mem0LLMConfig(I18nMixin, BaseModel):
     config: Dict = Field(..., alias="config")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "provider": Description(en="LLM provider name", zh="语言模型提供者名称"),
+        "provider": Description(
+            en="LLM provider name",
+            zh="语言模型提供者名称",
+            ru="Название провайдера LLM",
+        ),
         "config": Description(
-            en="Provider-specific configuration", zh="提供者特定配置"
+            en="Provider-specific configuration",
+            zh="提供者特定配置",
+            ru="Конфигурация, специфичная для провайдера",
         ),
     }
 
@@ -95,9 +110,15 @@ class Mem0EmbedderConfig(I18nMixin, BaseModel):
     config: Dict = Field(..., alias="config")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "provider": Description(en="Embedder provider name", zh="嵌入模型提供者名称"),
+        "provider": Description(
+            en="Embedder provider name",
+            zh="嵌入模型提供者名称",
+            ru="Название провайдера эмбеддера",
+        ),
         "config": Description(
-            en="Provider-specific configuration", zh="提供者特定配置"
+            en="Provider-specific configuration",
+            zh="提供者特定配置",
+            ru="Конфигурация, специфичная для провайдера",
         ),
     }
 
@@ -110,9 +131,21 @@ class Mem0Config(I18nMixin, BaseModel):
     embedder: Mem0EmbedderConfig = Field(..., alias="embedder")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "vector_store": Description(en="Vector store configuration", zh="向量存储配置"),
-        "llm": Description(en="LLM configuration", zh="语言模型配置"),
-        "embedder": Description(en="Embedder configuration", zh="嵌入模型配置"),
+        "vector_store": Description(
+            en="Vector store configuration",
+            zh="向量存储配置",
+            ru="Конфигурация векторного хранилища",
+        ),
+        "llm": Description(
+            en="LLM configuration",
+            zh="语言模型配置",
+            ru="Конфигурация LLM",
+        ),
+        "embedder": Description(
+            en="Embedder configuration",
+            zh="嵌入模型配置",
+            ru="Конфигурация эмбеддера",
+        ),
     }
 
 
@@ -129,18 +162,24 @@ class HumeAIConfig(I18nMixin, BaseModel):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "api_key": Description(
-            en="API key for Hume AI service", zh="Hume AI 服务的 API 密钥"
+            en="API key for Hume AI service",
+            zh="Hume AI 服务的 API 密钥",
+            ru="API ключ для службы Hume AI",
         ),
         "host": Description(
             en="Host URL for Hume AI service (default: api.hume.ai)",
             zh="Hume AI 服务的主机地址（默认：api.hume.ai）",
+            ru="URL хоста для службы Hume AI (по умолчанию: api.hume.ai)",
         ),
         "config_id": Description(
-            en="Configuration ID for EVI settings", zh="EVI 配置 ID"
+            en="Configuration ID for EVI settings",
+            zh="EVI 配置 ID",
+            ru="ID конфигурации для настроек EVI",
         ),
         "idle_timeout": Description(
             en="Idle timeout in seconds before disconnecting (default: 15)",
             zh="空闲超时断开连接的秒数（默认：15）",
+            ru="Таймаут простоя в секундах перед отключением (по умолчанию: 15)",
         ),
     }
 
@@ -159,15 +198,19 @@ class LettaConfig(I18nMixin, BaseModel):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "host": Description(
-            en="Host address for the Letta server", zh="Letta服务器的主机地址"
+            en="Host address for the Letta server",
+            zh="Letta服务器的主机地址",
+            ru="Адрес хоста для сервера Letta",
         ),
         "port": Description(
             en="Port number for the Letta server (default: 8283)",
             zh="Letta服务器的端口号（默认：8283）",
+            ru="Номер порта для сервера Letta (по умолчанию: 8283)",
         ),
         "id": Description(
             en="Agent instance ID running on the Letta server",
             zh="指定Letta服务器上运行的Agent实例id",
+            ru="ID экземпляра агента, работающего на сервере Letta",
         ),
     }
 
@@ -184,14 +227,24 @@ class AgentSettings(I18nMixin, BaseModel):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "basic_memory_agent": Description(
-            en="Configuration for basic memory agent", zh="基础记忆代理配置"
+            en="Configuration for basic memory agent",
+            zh="基础记忆代理配置",
+            ru="Конфигурация для базового агента с памятью",
         ),
-        "mem0_agent": Description(en="Configuration for Mem0 agent", zh="Mem0代理配置"),
+        "mem0_agent": Description(
+            en="Configuration for Mem0 agent",
+            zh="Mem0代理配置",
+            ru="Конфигурация для агента Mem0",
+        ),
         "hume_ai_agent": Description(
-            en="Configuration for Hume AI agent", zh="Hume AI 代理配置"
+            en="Configuration for Hume AI agent",
+            zh="Hume AI 代理配置",
+            ru="Конфигурация для агента Hume AI",
         ),
         "letta_agent": Description(
-            en="Configuration for Letta agent", zh="Letta 代理配置"
+            en="Configuration for Letta agent",
+            zh="Letta 代理配置",
+            ru="Конфигурация для агента Letta",
         ),
     }
 
@@ -207,20 +260,28 @@ class AgentConfig(I18nMixin, BaseModel):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "conversation_agent_choice": Description(
-            en="Type of conversation agent to use", zh="要使用的对话代理类型"
+            en="Type of conversation agent to use",
+            zh="要使用的对话代理类型",
+            ru="Тип агента разговора для использования",
         ),
         "agent_settings": Description(
-            en="Settings for different agent types", zh="不同代理类型的设置"
+            en="Settings for different agent types",
+            zh="不同代理类型的设置",
+            ru="Настройки для различных типов агентов",
         ),
         "llm_configs": Description(
-            en="Pool of LLM provider configurations", zh="语言模型提供者配置池"
+            en="Pool of LLM provider configurations",
+            zh="语言模型提供者配置池",
+            ru="Пул конфигураций провайдеров LLM",
         ),
         "faster_first_response": Description(
             en="Whether to respond as soon as encountering a comma in the first sentence to reduce latency (default: True)",
             zh="是否在第一句回应时遇上逗号就直接生成音频以减少首句延迟（默认：True）",
+            ru="Отвечать ли сразу при встрече запятой в первом предложении для уменьшения задержки (по умолчанию: True)",
         ),
         "segment_method": Description(
             en="Method for segmenting sentences: 'regex' or 'pysbd' (default: 'pysbd')",
             zh="分割句子的方法：'regex' 或 'pysbd'（默认：'pysbd'）",
+            ru="Метод разделения предложений: 'regex' или 'pysbd' (по умолчанию: 'pysbd')",
         ),
     }

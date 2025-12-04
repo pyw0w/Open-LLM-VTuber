@@ -16,24 +16,40 @@ class SileroVADConfig(I18nMixin):
     smoothing_window: int = Field(..., alias="smoothing_window")  # 5
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "orig_sr": Description(en="Original Audio Sample Rate", zh="原始音频采样率"),
-        "target_sr": Description(en="Target Audio Sample Rate", zh="目标音频采样率"),
+        "orig_sr": Description(
+            en="Original Audio Sample Rate",
+            zh="原始音频采样率",
+            ru="Исходная частота дискретизации аудио",
+        ),
+        "target_sr": Description(
+            en="Target Audio Sample Rate",
+            zh="目标音频采样率",
+            ru="Целевая частота дискретизации аудио",
+        ),
         "prob_threshold": Description(
-            en="Probability Threshold for VAD", zh="语音活动检测的概率阈值"
+            en="Probability Threshold for VAD",
+            zh="语音活动检测的概率阈值",
+            ru="Порог вероятности для VAD",
         ),
         "db_threshold": Description(
-            en="Decibel Threshold for VAD", zh="语音活动检测的分贝阈值"
+            en="Decibel Threshold for VAD",
+            zh="语音活动检测的分贝阈值",
+            ru="Порог децибел для VAD",
         ),
         "required_hits": Description(
             en="Number of consecutive hits required to consider speech",
             zh="连续命中次数以确认语音",
+            ru="Количество последовательных попаданий, необходимое для рассмотрения речи",
         ),
         "required_misses": Description(
             en="Number of consecutive misses required to consider silence",
             zh="连续未命中次数以确认静音",
+            ru="Количество последовательных промахов, необходимое для рассмотрения тишины",
         ),
         "smoothing_window": Description(
-            en="Smoothing window size for VAD", zh="语音活动检测的平滑窗口大小"
+            en="Smoothing window size for VAD",
+            zh="语音活动检测的平滑窗口大小",
+            ru="Размер окна сглаживания для VAD",
         ),
     }
 
@@ -46,10 +62,14 @@ class VADConfig(I18nMixin):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "vad_model": Description(
-            en="Voice Activity Detection model to use", zh="要使用的语音活动检测模型"
+            en="Voice Activity Detection model to use",
+            zh="要使用的语音活动检测模型",
+            ru="Используемая модель обнаружения речевой активности",
         ),
         "silero_vad": Description(
-            en="Configuration for Silero VAD", zh="Silero VAD 配置"
+            en="Configuration for Silero VAD",
+            zh="Silero VAD 配置",
+            ru="Конфигурация для Silero VAD",
         ),
     }
 

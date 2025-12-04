@@ -13,14 +13,19 @@ class AzureASRConfig(I18nMixin):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "api_key": Description(
-            en="API key for Azure ASR service", zh="Azure ASR 服务的 API 密钥"
+            en="API key for Azure ASR service",
+            zh="Azure ASR 服务的 API 密钥",
+            ru="API ключ для службы Azure ASR",
         ),
         "region": Description(
-            en="Azure region (e.g., eastus)", zh="Azure 区域（如 eastus)"
+            en="Azure region (e.g., eastus)",
+            zh="Azure 区域（如 eastus)",
+            ru="Регион Azure (например, eastus)",
         ),
         "languages": Description(
             en="List of languages to detect (e.g., ['en-US', 'zh-CN'])",
             zh="要检测的语言列表（如 ['en-US', 'zh-CN'])",
+            ru="Список языков для определения (например, ['en-US', 'zh-CN'])",
         ),
     }
 
@@ -38,26 +43,34 @@ class FasterWhisperConfig(I18nMixin):
     prompt: str | None = Field(None, alias="prompt")
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "model_path": Description(
-            en="Path to the Faster Whisper model", zh="Faster Whisper 模型路径"
+            en="Path to the Faster Whisper model",
+            zh="Faster Whisper 模型路径",
+            ru="Путь к модели Faster Whisper",
         ),
         "download_root": Description(
-            en="Root directory for downloading models", zh="模型下载根目录"
+            en="Root directory for downloading models",
+            zh="模型下载根目录",
+            ru="Корневая директория для загрузки моделей",
         ),
         "language": Description(
             en="Language code (e.g., en, zh) or empty string for auto-detect",
             zh="语言代码（如 en, zh）或留空以自动检测",
+            ru="Код языка (например, en, zh) или пустая строка для автоопределения",
         ),
         "device": Description(
             en="Device to use for inference (cpu, cuda, or auto)",
             zh="推理设备（cpu, cuda, auto）",
+            ru="Устройство для инференса (cpu, cuda или auto)",
         ),
         "compute_type": Description(
             en="Compute type for the model (int8, float16, or float32)",
             zh="模型的计算类型（int8、float16 或 float32）",
+            ru="Тип вычислений для модели (int8, float16 или float32)",
         ),
         "prompt": Description(
             en="An initial prompt to provide context or guide the transcription. Language of the prompt should match the audio language.",
             zh="用于提供上下文或引导转录的初始提示词。提示词应与音频语言匹配。",
+            ru="Начальный промпт для предоставления контекста или направления транскрипции. Язык промпта должен соответствовать языку аудио.",
         ),
     }
 
@@ -73,23 +86,34 @@ class WhisperCPPConfig(I18nMixin):
     prompt: str | None = Field(None, alias="prompt")
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "model_name": Description(
-            en="Name of the Whisper model", zh="Whisper 模型名称"
+            en="Name of the Whisper model",
+            zh="Whisper 模型名称",
+            ru="Название модели Whisper",
         ),
         "model_dir": Description(
-            en="Directory containing Whisper models", zh="Whisper 模型目录"
+            en="Directory containing Whisper models",
+            zh="Whisper 模型目录",
+            ru="Директория, содержащая модели Whisper",
         ),
         "print_realtime": Description(
-            en="Print output in real-time", zh="实时打印输出"
+            en="Print output in real-time",
+            zh="实时打印输出",
+            ru="Выводить результат в реальном времени",
         ),
         "print_progress": Description(
-            en="Print progress information", zh="打印进度信息"
+            en="Print progress information",
+            zh="打印进度信息",
+            ru="Выводить информацию о прогрессе",
         ),
         "language": Description(
-            en="Language code (e.g., auto, en, zh)", zh="语言代码（如 auto、en、zh）"
+            en="Language code (e.g., auto, en, zh)",
+            zh="语言代码（如 auto、en、zh）",
+            ru="Код языка (например, auto, en, zh)",
         ),
         "prompt": Description(
             en="An initial prompt to provide context or guide the transcription. Language of the prompt should match the audio language.",
             zh="用于提供上下文或引导转录的初始提示词。提示词应与音频语言匹配。",
+            ru="Начальный промпт для предоставления контекста или направления транскрипции. Язык промпта должен соответствовать языку аудио.",
         ),
     }
 
@@ -102,16 +126,25 @@ class WhisperConfig(I18nMixin):
     device: Literal["cpu", "cuda"] = Field("cpu", alias="device")
     prompt: str | None = Field(None, alias="prompt")
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "name": Description(en="Name of the Whisper model", zh="Whisper 模型名称"),
+        "name": Description(
+            en="Name of the Whisper model",
+            zh="Whisper 模型名称",
+            ru="Название модели Whisper",
+        ),
         "download_root": Description(
-            en="Root directory for downloading models", zh="模型下载根目录"
+            en="Root directory for downloading models",
+            zh="模型下载根目录",
+            ru="Корневая директория для загрузки моделей",
         ),
         "device": Description(
-            en="Device to use for inference (cpu or cuda)", zh="推理设备（cpu 或 cuda）"
+            en="Device to use for inference (cpu or cuda)",
+            zh="推理设备（cpu 或 cuda）",
+            ru="Устройство для инференса (cpu или cuda)",
         ),
         "prompt": Description(
             en="An initial prompt to provide context or guide the transcription. Language of the prompt should match the audio language.",
             zh="用于提供上下文或引导转录的初始提示词。提示词应与音频语言匹配。",
+            ru="Начальный промпт для предоставления контекста или направления транскрипции. Язык промпта должен соответствовать языку аудио.",
         ),
     }
 
@@ -130,31 +163,50 @@ class FunASRConfig(I18nMixin):
     language: str = Field("auto", alias="language")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "model_name": Description(en="Name of the FunASR model", zh="FunASR 模型名称"),
-        "vad_model": Description(
-            en="Voice Activity Detection model", zh="语音活动检测模型"
+        "model_name": Description(
+            en="Name of the FunASR model",
+            zh="FunASR 模型名称",
+            ru="Название модели FunASR",
         ),
-        "punc_model": Description(en="Punctuation model", zh="标点符号模型"),
+        "vad_model": Description(
+            en="Voice Activity Detection model",
+            zh="语音活动检测模型",
+            ru="Модель обнаружения речевой активности",
+        ),
+        "punc_model": Description(
+            en="Punctuation model",
+            zh="标点符号模型",
+            ru="Модель пунктуации",
+        ),
         "device": Description(
-            en="Device to use for inference (cpu or cuda)", zh="推理设备（cpu 或 cuda）"
+            en="Device to use for inference (cpu or cuda)",
+            zh="推理设备（cpu 或 cuda）",
+            ru="Устройство для инференса (cpu или cuda)",
         ),
         "disable_update": Description(
             en="Disable checking for FunASR updates on launch",
             zh="启动时禁用 FunASR 更新检查",
+            ru="Отключить проверку обновлений FunASR при запуске",
         ),
         "ncpu": Description(
             en="Number of CPU threads for internal operations",
             zh="内部操作的 CPU 线程数",
+            ru="Количество потоков CPU для внутренних операций",
         ),
         "hub": Description(
             en="Model hub to use (ms for ModelScope, hf for Hugging Face)",
             zh="使用的模型仓库（ms 为 ModelScope，hf 为 Hugging Face）",
+            ru="Хаб моделей для использования (ms для ModelScope, hf для Hugging Face)",
         ),
         "use_itn": Description(
-            en="Enable inverse text normalization", zh="启用反向文本归一化"
+            en="Enable inverse text normalization",
+            zh="启用反向文本归一化",
+            ru="Включить обратную нормализацию текста",
         ),
         "language": Description(
-            en="Language code (e.g., auto, zh, en)", zh="语言代码（如 auto、zh、en）"
+            en="Language code (e.g., auto, zh, en)",
+            zh="语言代码（如 auto、zh、en）",
+            ru="Код языка (например, auto, zh, en)",
         ),
     }
 
@@ -168,15 +220,19 @@ class GroqWhisperASRConfig(I18nMixin):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "api_key": Description(
-            en="API key for Groq Whisper ASR", zh="Groq Whisper ASR 的 API 密钥"
+            en="API key for Groq Whisper ASR",
+            zh="Groq Whisper ASR 的 API 密钥",
+            ru="API ключ для Groq Whisper ASR",
         ),
         "model": Description(
             en="Name of the Groq Whisper model to use",
             zh="要使用的 Groq Whisper 模型名称",
+            ru="Название модели Groq Whisper для использования",
         ),
         "lang": Description(
             en="Language code (leave empty for auto-detect)",
             zh="语言代码（留空以自动检测）",
+            ru="Код языка (оставить пустым для автоопределения)",
         ),
     }
 
@@ -210,43 +266,79 @@ class SherpaOnnxASRConfig(I18nMixin):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "model_type": Description(
-            en="Type of ASR model to use", zh="要使用的 ASR 模型类型"
+            en="Type of ASR model to use",
+            zh="要使用的 ASR 模型类型",
+            ru="Тип используемой ASR модели",
         ),
         "encoder": Description(
             en="Path to encoder model (for transducer)",
             zh="编码器模型路径（用于 transducer）",
+            ru="Путь к модели энкодера (для transducer)",
         ),
         "decoder": Description(
             en="Path to decoder model (for transducer)",
             zh="解码器模型路径（用于 transducer）",
+            ru="Путь к модели декодера (для transducer)",
         ),
         "joiner": Description(
             en="Path to joiner model (for transducer)",
             zh="连接器模型路径（用于 transducer）",
+            ru="Путь к модели соединителя (для transducer)",
         ),
         "paraformer": Description(
-            en="Path to paraformer model", zh="Paraformer 模型路径"
+            en="Path to paraformer model",
+            zh="Paraformer 模型路径",
+            ru="Путь к модели Paraformer",
         ),
-        "nemo_ctc": Description(en="Path to NeMo CTC model", zh="NeMo CTC 模型路径"),
-        "wenet_ctc": Description(en="Path to WeNet CTC model", zh="WeNet CTC 模型路径"),
-        "tdnn_model": Description(en="Path to TDNN model", zh="TDNN 模型路径"),
+        "nemo_ctc": Description(
+            en="Path to NeMo CTC model",
+            zh="NeMo CTC 模型路径",
+            ru="Путь к модели NeMo CTC",
+        ),
+        "wenet_ctc": Description(
+            en="Path to WeNet CTC model",
+            zh="WeNet CTC 模型路径",
+            ru="Путь к модели WeNet CTC",
+        ),
+        "tdnn_model": Description(
+            en="Path to TDNN model",
+            zh="TDNN 模型路径",
+            ru="Путь к модели TDNN",
+        ),
         "whisper_encoder": Description(
-            en="Path to Whisper encoder model", zh="Whisper 编码器模型路径"
+            en="Path to Whisper encoder model",
+            zh="Whisper 编码器模型路径",
+            ru="Путь к модели энкодера Whisper",
         ),
         "whisper_decoder": Description(
-            en="Path to Whisper decoder model", zh="Whisper 解码器模型路径"
+            en="Path to Whisper decoder model",
+            zh="Whisper 解码器模型路径",
+            ru="Путь к модели декодера Whisper",
         ),
         "sense_voice": Description(
-            en="Path to SenseVoice model", zh="SenseVoice 模型路径"
+            en="Path to SenseVoice model",
+            zh="SenseVoice 模型路径",
+            ru="Путь к модели SenseVoice",
         ),
-        "tokens": Description(en="Path to tokens file", zh="词元文件路径"),
-        "num_threads": Description(en="Number of threads to use", zh="使用的线程数"),
+        "tokens": Description(
+            en="Path to tokens file",
+            zh="词元文件路径",
+            ru="Путь к файлу токенов",
+        ),
+        "num_threads": Description(
+            en="Number of threads to use",
+            zh="使用的线程数",
+            ru="Количество используемых потоков",
+        ),
         "use_itn": Description(
-            en="Enable inverse text normalization", zh="启用反向文本归一化"
+            en="Enable inverse text normalization",
+            zh="启用反向文本归一化",
+            ru="Включить обратную нормализацию текста",
         ),
         "provider": Description(
             en="Provider for inference (cpu or cuda) (cuda option needs additional settings. Please check our docs)",
             zh="推理平台（cpu 或 cuda）(cuda 需要额外配置，请参考文档)",
+            ru="Провайдер для инференса (cpu или cuda) (опция cuda требует дополнительных настроек. Пожалуйста, проверьте документацию)",
         ),
     }
 
@@ -319,22 +411,44 @@ class ASRConfig(I18nMixin):
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "asr_model": Description(
-            en="Speech-to-text model to use", zh="要使用的语音识别模型"
+            en="Speech-to-text model to use",
+            zh="要使用的语音识别模型",
+            ru="Используемая модель распознавания речи",
         ),
-        "azure_asr": Description(en="Configuration for Azure ASR", zh="Azure ASR 配置"),
+        "azure_asr": Description(
+            en="Configuration for Azure ASR",
+            zh="Azure ASR 配置",
+            ru="Конфигурация для Azure ASR",
+        ),
         "faster_whisper": Description(
-            en="Configuration for Faster Whisper", zh="Faster Whisper 配置"
+            en="Configuration for Faster Whisper",
+            zh="Faster Whisper 配置",
+            ru="Конфигурация для Faster Whisper",
         ),
         "whisper_cpp": Description(
-            en="Configuration for WhisperCPP", zh="WhisperCPP 配置"
+            en="Configuration for WhisperCPP",
+            zh="WhisperCPP 配置",
+            ru="Конфигурация для WhisperCPP",
         ),
-        "whisper": Description(en="Configuration for Whisper", zh="Whisper 配置"),
-        "fun_asr": Description(en="Configuration for FunASR", zh="FunASR 配置"),
+        "whisper": Description(
+            en="Configuration for Whisper",
+            zh="Whisper 配置",
+            ru="Конфигурация для Whisper",
+        ),
+        "fun_asr": Description(
+            en="Configuration for FunASR",
+            zh="FunASR 配置",
+            ru="Конфигурация для FunASR",
+        ),
         "groq_whisper_asr": Description(
-            en="Configuration for Groq Whisper ASR", zh="Groq Whisper ASR 配置"
+            en="Configuration for Groq Whisper ASR",
+            zh="Groq Whisper ASR 配置",
+            ru="Конфигурация для Groq Whisper ASR",
         ),
         "sherpa_onnx_asr": Description(
-            en="Configuration for Sherpa Onnx ASR", zh="Sherpa Onnx ASR 配置"
+            en="Configuration for Sherpa Onnx ASR",
+            zh="Sherpa Onnx ASR 配置",
+            ru="Конфигурация для Sherpa Onnx ASR",
         ),
     }
 

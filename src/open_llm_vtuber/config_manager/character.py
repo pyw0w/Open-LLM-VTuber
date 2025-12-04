@@ -1,11 +1,12 @@
 # config_manager/character.py
 from pydantic import Field, field_validator
-from typing import Dict, ClassVar
+from typing import Dict, ClassVar, Optional
 from .i18n import I18nMixin, Description
 from .asr import ASRConfig
 from .tts import TTSConfig
 from .vad import VADConfig
 from .tts_preprocessor import TTSPreprocessorConfig
+from .vision import VisionConfig
 
 from .agent import AgentConfig
 
@@ -27,45 +28,73 @@ class CharacterConfig(I18nMixin):
     tts_preprocessor_config: TTSPreprocessorConfig = Field(
         ..., alias="tts_preprocessor_config"
     )
+    vision_config: Optional[VisionConfig] = Field(None, alias="vision_config")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "conf_name": Description(
-            en="Name of the character configuration", zh="角色配置名称"
+            en="Name of the character configuration",
+            zh="角色配置名称",
+            ru="Название конфигурации персонажа",
         ),
         "conf_uid": Description(
             en="Unique identifier for the character configuration",
             zh="角色配置唯一标识符",
+            ru="Уникальный идентификатор конфигурации персонажа",
         ),
         "live2d_model_name": Description(
-            en="Name of the Live2D model to use", zh="使用的Live2D模型名称"
+            en="Name of the Live2D model to use",
+            zh="使用的Live2D模型名称",
+            ru="Название используемой Live2D модели",
         ),
         "character_name": Description(
-            en="Name of the AI character in conversation", zh="对话中AI角色的名字"
+            en="Name of the AI character in conversation",
+            zh="对话中AI角色的名字",
+            ru="Имя AI персонажа в разговоре",
         ),
         "persona_prompt": Description(
-            en="Persona prompt. The persona of your character.", zh="角色人设提示词"
+            en="Persona prompt. The persona of your character.",
+            zh="角色人设提示词",
+            ru="Промпт персонажа. Личность вашего персонажа.",
         ),
         "agent_config": Description(
-            en="Configuration for the conversation agent", zh="对话代理配置"
+            en="Configuration for the conversation agent",
+            zh="对话代理配置",
+            ru="Конфигурация для агента разговора",
         ),
         "asr_config": Description(
-            en="Configuration for Automatic Speech Recognition", zh="语音识别配置"
+            en="Configuration for Automatic Speech Recognition",
+            zh="语音识别配置",
+            ru="Конфигурация для автоматического распознавания речи",
         ),
         "tts_config": Description(
-            en="Configuration for Text-to-Speech", zh="语音合成配置"
+            en="Configuration for Text-to-Speech",
+            zh="语音合成配置",
+            ru="Конфигурация для синтеза речи",
         ),
         "vad_config": Description(
-            en="Configuration for Voice Activity Detection", zh="语音活动检测配置"
+            en="Configuration for Voice Activity Detection",
+            zh="语音活动检测配置",
+            ru="Конфигурация для обнаружения речевой активности",
         ),
         "tts_preprocessor_config": Description(
             en="Configuration for Text-to-Speech Preprocessor",
             zh="语音合成预处理器配置",
+            ru="Конфигурация для препроцессора синтеза речи",
         ),
         "human_name": Description(
-            en="Name of the human user in conversation", zh="对话中人类用户的名字"
+            en="Name of the human user in conversation",
+            zh="对话中人类用户的名字",
+            ru="Имя пользователя-человека в разговоре",
         ),
         "avatar": Description(
-            en="Avatar image path for the character", zh="角色头像图片路径"
+            en="Avatar image path for the character",
+            zh="角色头像图片路径",
+            ru="Путь к изображению аватара персонажа",
+        ),
+        "vision_config": Description(
+            en="Configuration for vision model (optional, used for image description when main LLM doesn't support vision)",
+            zh="视觉模型配置（可选，当主 LLM 不支持视觉时用于图像描述）",
+            ru="Конфигурация для vision-модели (опционально, используется для описания изображений, когда основной LLM не поддерживает vision)",
         ),
     }
 

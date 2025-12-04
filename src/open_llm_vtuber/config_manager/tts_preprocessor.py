@@ -16,9 +16,12 @@ class DeepLXConfig(I18nMixin):
         "deeplx_target_lang": Description(
             en="Target language code for DeepLX translation",
             zh="DeepLX 翻译的目标语言代码",
+            ru="Код целевого языка для перевода DeepLX",
         ),
         "deeplx_api_endpoint": Description(
-            en="API endpoint URL for DeepLX service", zh="DeepLX 服务的 API 端点 URL"
+            en="API endpoint URL for DeepLX service",
+            zh="DeepLX 服务的 API 端点 URL",
+            ru="URL эндпоинта API для службы DeepLX",
         ),
     }
 
@@ -37,15 +40,30 @@ class TencentConfig(I18nMixin):
     )
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
-        "secret_id": Description(en="Tencent Secret ID", zh="腾讯服务的Secret ID"),
-        "secret_key": Description(en="Tencent Secret Key", zh="腾讯服务的Secret Key"),
-        "region": Description(en="Region for Tencent Service", zh="腾讯服务使用的区域"),
+        "secret_id": Description(
+            en="Tencent Secret ID",
+            zh="腾讯服务的Secret ID",
+            ru="Tencent Secret ID",
+        ),
+        "secret_key": Description(
+            en="Tencent Secret Key",
+            zh="腾讯服务的Secret Key",
+            ru="Tencent Secret Key",
+        ),
+        "region": Description(
+            en="Region for Tencent Service",
+            zh="腾讯服务使用的区域",
+            ru="Регион для службы Tencent",
+        ),
         "source_lang": Description(
-            en="Source language code for tencent translation", zh="腾讯翻译的源语言代码"
+            en="Source language code for tencent translation",
+            zh="腾讯翻译的源语言代码",
+            ru="Код исходного языка для перевода Tencent",
         ),
         "target_lang": Description(
             en="Target language code for tencent translation",
             zh="腾讯翻译的目标语言代码",
+            ru="Код целевого языка для перевода Tencent",
         ),
     }
 
@@ -118,8 +136,11 @@ class TTSPreprocessorConfig(I18nMixin):
         "remove_special_char": Description(
             en="Remove special characters from the input text",
             zh="从输入文本中删除特殊字符",
+            ru="Удалить специальные символы из входного текста",
         ),
         "translator_config": Description(
-            en="Configuration for translation services", zh="翻译服务的配置"
+            en="Configuration for translation services",
+            zh="翻译服务的配置",
+            ru="Конфигурация для служб перевода",
         ),
     }

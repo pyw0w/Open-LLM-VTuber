@@ -291,7 +291,15 @@ class RAGMemoryManager:
 
             # Add to FAISS index
             if self.index is None:
-                self.index = faiss.IndexFlatL2(self.embedding_dim)
+                # Create index respecting device setting
+                if self.device == "cuda" and self.gpu_resource is not None:
+                    # Create index on CPU first, then move to GPU
+                    cpu_index = faiss.IndexFlatL2(self.embedding_dim)
+                    self.index = faiss.index_cpu_to_gpu(self.gpu_resource, 0, cpu_index)
+                    logger.info("Created new RAG index on GPU")
+                else:
+                    self.index = faiss.IndexFlatL2(self.embedding_dim)
+                    logger.info("Created new RAG index on CPU")
 
             self.index.add(embedding)
 
@@ -351,12 +359,14 @@ class RAGMemoryManager:
             total_length = 0
 
             for i, (distance, idx) in enumerate(zip(distances[0], indices[0])):
-                if idx >= len(self.metadata):
+                # Skip invalid indices (negative or out of bounds)
+                if idx < 0 or idx >= len(self.metadata):
                     continue
 
                 # Convert L2 distance to cosine similarity
-                # For normalized embeddings: similarity = 1 - (distance^2 / 2)
-                similarity = 1.0 - (distance * distance / 2.0)
+                # For normalized embeddings, FAISS IndexFlatL2 returns squared L2 distance
+                # similarity = 1 - (distance / 2) where distance is already squared
+                similarity = 1.0 - (distance / 2.0)
 
                 if similarity >= threshold:
                     meta = self.metadata[idx]

@@ -49,7 +49,7 @@ ruff==0.13.2
 scipy==1.15.3 ; python_full_version < '3.11'
 sentence-transformers>=2.2.0
     # via open-llm-vtuber (pyproject.toml)
-faiss-cpu>=1.7.4
+faiss-cpu>=1.13.0
     # via open-llm-vtuber (pyproject.toml)
     # via open-llm-vtuber (pyproject.toml)
 scipy==1.16.2 ; python_full_version >= '3.11'

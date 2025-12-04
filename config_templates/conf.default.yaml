@@ -478,6 +478,11 @@ character_config:
     ignore_asterisks: True # ignore everything wrapped inside asterisks
     ignore_angle_brackets: True # ignore everything wrapped inside <text>
 
+    # Forbidden words filter - prevents neural network from pronouncing prohibited words during streaming
+    forbidden_words_enabled: False # enable filtering of forbidden words in TTS text
+    forbidden_words: [] # list of forbidden words to filter (case-sensitive, partial matching)
+    forbidden_words_replacement: '[censored]' # replacement text for forbidden words
+
     translator_config:
       # Like... you speak and read the subtitles in English, and the TTS speaks Japanese or that kind of things
       translate_audio: False # Warning: you need to deploy DeeplX to use this. Otherwise it's going to crash

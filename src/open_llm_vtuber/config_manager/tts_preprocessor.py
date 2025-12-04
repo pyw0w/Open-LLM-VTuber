@@ -1,5 +1,5 @@
 # config_manager/translate.py
-from typing import Literal, Optional, Dict, ClassVar
+from typing import Literal, Optional, Dict, ClassVar, List
 from pydantic import ValidationInfo, Field, model_validator
 from .i18n import I18nMixin, Description
 
@@ -130,6 +130,13 @@ class TTSPreprocessorConfig(I18nMixin):
     ignore_parentheses: bool = Field(default=True, alias="ignore_parentheses")
     ignore_asterisks: bool = Field(default=True, alias="ignore_asterisks")
     ignore_angle_brackets: bool = Field(default=True, alias="ignore_angle_brackets")
+    forbidden_words_enabled: bool = Field(
+        default=False, alias="forbidden_words_enabled"
+    )
+    forbidden_words: List[str] = Field(default_factory=list, alias="forbidden_words")
+    forbidden_words_replacement: str = Field(
+        default="[censored]", alias="forbidden_words_replacement"
+    )
     translator_config: TranslatorConfig = Field(..., alias="translator_config")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
@@ -137,6 +144,21 @@ class TTSPreprocessorConfig(I18nMixin):
             en="Remove special characters from the input text",
             zh="从输入文本中删除特殊字符",
             ru="Удалить специальные символы из входного текста",
+        ),
+        "forbidden_words_enabled": Description(
+            en="Enable filtering of forbidden words in TTS text",
+            zh="启用 TTS 文本中的禁用词过滤",
+            ru="Включить фильтрацию запрещенных слов в тексте TTS",
+        ),
+        "forbidden_words": Description(
+            en="List of forbidden words to filter from TTS text",
+            zh="要从 TTS 文本中过滤的禁用词列表",
+            ru="Список запрещенных слов для фильтрации из текста TTS",
+        ),
+        "forbidden_words_replacement": Description(
+            en="Replacement text for forbidden words (e.g., '[censored]')",
+            zh="禁用词的替换文本（例如，'[censored]'）",
+            ru="Текст замены для запрещенных слов (например, '[censored]')",
         ),
         "translator_config": Description(
             en="Configuration for translation services",

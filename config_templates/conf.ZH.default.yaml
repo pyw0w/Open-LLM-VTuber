@@ -473,6 +473,11 @@ character_config:
     ignore_asterisks: True # 从音频生成中删除星号包住的内容(单双星号)
     ignore_angle_brackets: True # 从音频生成中删除尖括号包住的内容
 
+    # 禁用词过滤器 - 防止神经网络在流式传输期间发音禁止的词语
+    forbidden_words_enabled: False # 启用 TTS 文本中的禁用词过滤
+    forbidden_words: [] # 要过滤的禁用词列表（区分大小写，部分匹配）
+    forbidden_words_replacement: '[censored]' # 禁用词的替换文本
+
     translator_config:
       # 比如...你说话并阅读英语字幕，而 TTS 说日语之类的
       translate_audio: False # 警告：请确保翻译引擎配置成功再开启此选项，否则会翻译失败

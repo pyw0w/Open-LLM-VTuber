@@ -196,6 +196,9 @@ def tts_filter(
                             ignore_parentheses=config.ignore_parentheses,
                             ignore_asterisks=config.ignore_asterisks,
                             ignore_angle_brackets=config.ignore_angle_brackets,
+                            forbidden_words_enabled=config.forbidden_words_enabled,
+                            forbidden_words=config.forbidden_words,
+                            forbidden_words_replacement=config.forbidden_words_replacement,
                         )
 
                     logger.debug(f"[{display.name}] display: {display.text}")

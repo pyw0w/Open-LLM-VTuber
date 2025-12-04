@@ -11,6 +11,9 @@ def tts_filter(
     ignore_parentheses: bool,
     ignore_asterisks: bool,
     ignore_angle_brackets: bool,
+    forbidden_words_enabled: bool = False,
+    forbidden_words: list[str] | None = None,
+    forbidden_words_replacement: str = "[censored]",
     translator: TranslateInterface | None = None,
 ) -> str:
     """
@@ -24,6 +27,10 @@ def tts_filter(
         ignore_brackets (bool): Whether to ignore text within brackets.
         ignore_parentheses (bool): Whether to ignore text within parentheses.
         ignore_asterisks (bool): Whether to ignore text within asterisks.
+        ignore_angle_brackets (bool): Whether to ignore text within angle brackets.
+        forbidden_words_enabled (bool): Whether to enable forbidden words filtering.
+        forbidden_words (list[str] | None): List of forbidden words to filter.
+        forbidden_words_replacement (str): Replacement text for forbidden words.
         translator (TranslateInterface, optional):
             The translator to use. If None, we'll skip the translation. Defaults to None.
 
@@ -64,6 +71,13 @@ def tts_filter(
             text = remove_special_characters(text)
         except Exception as e:
             logger.warning(f"Error removing special characters: {e}")
+            logger.warning(f"Text: {text}")
+            logger.warning("Skipping...")
+    if forbidden_words_enabled and forbidden_words:
+        try:
+            text = filter_forbidden_words(text, forbidden_words, forbidden_words_replacement)
+        except Exception as e:
+            logger.warning(f"Error filtering forbidden words: {e}")
             logger.warning(f"Text: {text}")
             logger.warning("Skipping...")
     if translator:
@@ -192,5 +206,36 @@ def filter_asterisks(text: str) -> str:
 
     # Clean up any extra spaces
     filtered_text = re.sub(r"\s+", " ", filtered_text).strip()
+
+    return filtered_text
+
+
+def filter_forbidden_words(
+    text: str, forbidden_words: list[str], replacement: str
+) -> str:
+    """
+    Filter text to replace forbidden words with a replacement string.
+    Uses case-sensitive partial matching (word "bad" matches "badword").
+
+    Args:
+        text (str): The text to filter.
+        forbidden_words (list[str]): List of forbidden words to filter.
+        replacement (str): Replacement text for forbidden words.
+
+    Returns:
+        str: The filtered text with forbidden words replaced.
+    """
+    if not text or not forbidden_words:
+        return text
+
+    filtered_text = text
+    for word in forbidden_words:
+        if not word:  # Skip empty words
+            continue
+        # Escape special regex characters in the word
+        escaped_word = re.escape(word)
+        # Use partial matching (no word boundaries) - case-sensitive
+        pattern = escaped_word
+        filtered_text = re.sub(pattern, replacement, filtered_text)
 
     return filtered_text

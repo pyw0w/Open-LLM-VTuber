@@ -43,7 +43,6 @@ from .vad import (
     SileroVADConfig,
 )
 from .tts_preprocessor import TTSPreprocessorConfig, TranslatorConfig, DeepLXConfig
-from .vision import VisionConfig, OllamaVisionConfig
 from .i18n import I18nMixin, Description, MultiLingualString
 from .agent import (
     AgentConfig,
@@ -113,9 +112,6 @@ __all__ = [
     "TTSPreprocessorConfig",
     "TranslatorConfig",
     "DeepLXConfig",
-    # Vision related classes
-    "VisionConfig",
-    "OllamaVisionConfig",
     # i18n related classes
     "I18nMixin",
     "Description",

@@ -6,7 +6,6 @@ from .asr import ASRConfig
 from .tts import TTSConfig
 from .vad import VADConfig
 from .tts_preprocessor import TTSPreprocessorConfig
-from .vision import VisionConfig
 
 from .agent import AgentConfig
 
@@ -28,7 +27,6 @@ class CharacterConfig(I18nMixin):
     tts_preprocessor_config: TTSPreprocessorConfig = Field(
         ..., alias="tts_preprocessor_config"
     )
-    vision_config: Optional[VisionConfig] = Field(None, alias="vision_config")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "conf_name": Description(
@@ -90,12 +88,7 @@ class CharacterConfig(I18nMixin):
             en="Avatar image path for the character",
             zh="角色头像图片路径",
             ru="Путь к изображению аватара персонажа",
-        ),
-        "vision_config": Description(
-            en="Configuration for vision model (optional, used for image description when main LLM doesn't support vision)",
-            zh="视觉模型配置（可选，当主 LLM 不支持视觉时用于图像描述）",
-            ru="Конфигурация для vision-модели (опционально, используется для описания изображений, когда основной LLM не поддерживает vision)",
-        ),
+        )
     }
 
     @field_validator("persona_prompt")

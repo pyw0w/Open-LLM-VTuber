@@ -10,13 +10,14 @@ class MultiLingualString(BaseModel):
 
     en: str = Field(..., description="English translation")
     zh: str = Field(..., description="Chinese translation")
+    ru: str = Field(..., description="Russian translation")
 
     def get(self, lang_code: str) -> str:
         """
         Retrieves the translation for the specified language code.
 
         Args:
-            lang_code: The language code (e.g., "en", "zh").
+            lang_code: The language code (e.g., "en", "zh", "ru").
 
         Returns:
             The translation for the specified language code, or the English translation if the specified language is not found.
@@ -38,7 +39,7 @@ class Description(MultiLingualString):
         Retrieves the main description text in the specified language.
 
         Args:
-            lang_code: The language code (e.g., "en", "zh").
+            lang_code: The language code (e.g., "en", "zh", "ru").
 
         Returns:
             The main description text in the specified language.
@@ -50,7 +51,7 @@ class Description(MultiLingualString):
         Retrieves the additional notes in the specified language.
 
         Args:
-            lang_code: The language code (e.g., "en", "zh").
+            lang_code: The language code (e.g., "en", "zh", "ru").
 
         Returns:
             The additional notes in the specified language, or None if no notes are available.
@@ -72,7 +73,8 @@ class Description(MultiLingualString):
         return cls(
             en=text,
             zh=text,
-            notes=MultiLingualString(en=notes, zh=notes) if notes else None,
+            ru=text,
+            notes=MultiLingualString(en=notes, zh=notes, ru=notes) if notes else None,
         )
 
 
@@ -94,7 +96,7 @@ class I18nMixin(BaseModel):
 
         Args:
             field_name: The name of the field.
-            lang_code: The language code (e.g., "en", "zh").
+            lang_code: The language code (e.g., "en", "zh", "ru").
 
         Returns:
             The description of the field in the specified language, or None if no description is available.
@@ -111,7 +113,7 @@ class I18nMixin(BaseModel):
 
         Args:
             field_name: The name of the field.
-            lang_code: The language code (e.g., "en", "zh").
+            lang_code: The language code (e.g., "en", "zh", "ru").
 
         Returns:
             The additional notes for the field in the specified language, or None if no notes are available.

@@ -67,15 +67,22 @@ class TranslatorConfig(I18nMixin):
         "translate_audio": Description(
             en="Enable audio translation (requires DeepLX deployment)",
             zh="启用音频翻译（需要部署 DeepLX）",
+            ru="Включить перевод аудио (требуется развёртывание DeepLX)",
         ),
         "translate_provider": Description(
-            en="Translation service provider to use", zh="要使用的翻译服务提供者"
+            en="Translation service provider to use",
+            zh="要使用的翻译服务提供者",
+            ru="Провайдер службы перевода для использования",
         ),
         "deeplx": Description(
-            en="Configuration for DeepLX translation service", zh="DeepLX 翻译服务配置"
+            en="Configuration for DeepLX translation service",
+            zh="DeepLX 翻译服务配置",
+            ru="Конфигурация службы перевода DeepLX",
         ),
         "tencent": Description(
-            en="Configuration for TenCent translation service", zh="腾讯 翻译服务配置"
+            en="Configuration for TenCent translation service",
+            zh="腾讯 翻译服务配置",
+            ru="Конфигурация службы перевода TenCent",
         ),
     }
 

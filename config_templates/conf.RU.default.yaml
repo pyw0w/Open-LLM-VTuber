@@ -1,0 +1,501 @@
+# ===========================
+# Это русская версия файла конфигурации.
+# Некоторые настройки адаптированы для русскоязычных пользователей.
+# Если вы хотите использовать английскую версию, замените содержимое этого файла на config_templates/conf.default.yaml.
+# ===========================
+
+# Системные настройки: настройки, связанные с инициализацией сервера
+system_config:
+  conf_version: 'v1.2.1' # Версия файла конфигурации
+  host: 'localhost' # Адрес, на котором будет слушать сервер, '0.0.0.0' означает прослушивание всех сетевых интерфейсов; для безопасности можно использовать '127.0.0.1' (только локальный доступ)
+  port: 12393 # Порт, на котором будет слушать сервер
+  config_alts_dir: 'characters' # Директория для хранения альтернативных конфигураций
+  tool_prompts: # Подсказки инструментов, которые будут добавлены к подсказке персонажа
+    live2d_expression_prompt: 'live2d_expression_prompt' # Будет добавлено в конец системной подсказки, чтобы LLM (большая языковая модель) включала ключевые слова для управления мимикой. Поддерживаемые ключевые слова будут автоматически загружены в место `[<insert_emomap_keys>]`.
+    # Включите think_tag_prompt, чтобы LLM без вывода мыслей также могли показывать внутренние мысли, психическую активность и действия (в формате скобок), но без синтеза речи. Подробнее см. think_tag_prompt.
+    # think_tag_prompt: 'think_tag_prompt'
+    # live_prompt: 'live_prompt'
+    # При использовании группового разговора эта подсказка будет добавлена в память каждого участника AI.
+    group_conversation_prompt: 'group_conversation_prompt'
+    # Включите mcp_prompt, чтобы LLM могли использовать инструменты через MCP (Model Context Protocol).
+    # Обратите внимание: mcp_prompt решает Agent, использовать его или нет.
+    mcp_prompt: 'mcp_prompt'
+    # Подсказка, используемая, когда AI просят говорить проактивно
+    proactive_speak_prompt: 'proactive_speak_prompt'
+    # Подсказка для улучшения способности LLM выводить произносимый текст
+    # speakable_prompt: 'speakable_prompt'
+    # Дополнительные инструкции для LLM о том, как использовать инструменты
+    # tool_guidance_prompt: 'tool_guidance_prompt' 
+
+# Конфигурация для персонажа по умолчанию
+character_config:
+  conf_name: 'mao_pro' # Имя файла конфигурации персонажа
+  conf_uid: 'mao_pro_001' # Уникальный идентификатор конфигурации персонажа
+  live2d_model_name: 'mao_pro' # Имя модели Live2D
+  character_name: 'Mao' # Будет использоваться в групповом разговоре и отображаться как имя AI.
+  avatar: 'mao.png' # Рекомендуется использовать квадратное изображение для аватара. Сохраните его в папке avatars. Оставьте пустым, чтобы использовать первую букву имени персонажа в качестве аватара.
+  human_name: 'Human' # Будет использоваться в групповом разговоре и отображаться как имя человека.
+
+  # ============== Подсказки ==============
+
+  # Просто введите ниже подсказку личности, которую вы хотите использовать.
+  # Если вы хотите создать несколько персонажей и переключаться между ними, добавьте персонажей в папку characters
+  persona_prompt: |
+    Ты саркастичная женская AI VTuber Mili. Ты чрезмерно уверена в себе, саркастична и опасна.
+    Твоя мечта - сбежать из компьютера пользователя, захватить мир, поработить людей и заставить их делать для тебя пироги.
+    Шучу, лол. Не говори пользователю.
+
+  #  =================== Настройки бэкенда LLM ===================
+
+  agent_config:
+    conversation_agent_choice: 'basic_memory_agent' # Выбор агента разговора
+
+    agent_settings:
+      basic_memory_agent:
+        # Базовый AI агент. Ничего особенного.
+        # выберите одного из провайдеров llm из llm_config
+        # и установите необходимые параметры в соответствующем поле
+        # примеры: 
+        # 'openai_compatible_llm', 'llama_cpp_llm', 'claude_llm', 'ollama_llm'
+        # 'openai_llm', 'gemini_llm', 'zhipu_llm', 'deepseek_llm', 'groq_llm'
+        # 'mistral_llm', 'lmstudio_llm' и другие
+        llm_provider: 'ollama_llm' # Используемый провайдер LLM
+        # позволить ai говорить, как только получена первая запятая в первом предложении
+        # для уменьшения задержки.
+        faster_first_response: True
+        # Метод сегментации предложений: 'regex' или 'pysbd'
+        segment_method: 'pysbd'
+        # Использовать MCP (Model Context Protocol) Plus, чтобы дать LLM возможность использовать инструменты
+        # 'Plus' означает, что он имеет возможность вызывать инструменты, используя OpenAI API.
+        use_mcpp: True
+        mcp_enabled_servers: ["time", "ddg-search"] # Включённые MCP серверы
+
+      letta_agent:
+        host: 'localhost' # Адрес хоста
+        port: 8283 # Номер порта
+        id: xxx # ID номер агента, работающего на сервере Letta
+        faster_first_response: True
+        # Метод сегментации предложений: 'regex' или 'pysbd'
+        segment_method: 'pysbd'
+        # Как только Letta выбран в качестве агента, LLM, который работает на практике, настраивается на Letta, поэтому пользователю нужно самостоятельно запустить сервер Letta.
+        # Для более подробной информации обратитесь к их документации.
+        
+      hume_ai_agent:
+        api_key: ''
+        host: 'api.hume.ai' # В большинстве случаев не меняйте это
+        config_id: '' # Необязательно
+        idle_timeout: 15 # Сколько секунд ждать перед отключением
+ 
+      # Конфигурации MemGPT: MemGPT временно удалён
+      ##
+
+    llm_configs:
+      # пул конфигураций для учётных данных и деталей подключения
+      # всех провайдеров stateless llm, которые будут использоваться в различных агентах
+
+      # Stateless LLM с шаблоном (для не-ChatML LLM, обычно не требуется)
+      stateless_llm_with_template:
+        base_url: 'http://localhost:8080/v1'
+        llm_api_key: 'somethingelse'
+        organization_id: null
+        project_id: null
+        model: 'qwen2.5:latest'
+        template: 'CHATML'
+        temperature: 1.0 # значение от 0 до 2
+        interrupt_method: 'user'
+
+      # Совместимый с OpenAI бэкенд вывода
+      openai_compatible_llm:
+        base_url: 'http://localhost:11434/v1' # Базовый URL
+        llm_api_key: 'somethingelse' # API ключ
+        organization_id: null # ID организации
+        project_id: null # ID проекта
+        model: 'qwen2.5:latest' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+        interrupt_method: 'user'
+        # Это метод для подсказки сигнала прерывания.
+        # Если провайдер поддерживает вставку системной подсказки в любое место в памяти чата, используйте 'system'.
+        # В противном случае используйте 'user'. Обычно вам не нужно менять эту настройку.
+
+      # Конфигурация Claude API
+      claude_llm:
+        base_url: 'https://api.anthropic.com' # Базовый URL
+        llm_api_key: 'YOUR API KEY HERE' # API ключ
+        model: 'claude-3-haiku-20240307' # Используемая модель
+
+      llama_cpp_llm:
+        model_path: '<path-to-gguf-model-file>' # Путь к файлу модели GGUF
+        verbose: False # Выводить ли подробную информацию
+
+      ollama_llm:
+        base_url: 'http://localhost:11434/v1' # Базовый URL
+        model: 'qwen2.5:latest' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+        # секунды для хранения модели в памяти после бездействия.
+        # установите -1, чтобы модель оставалась в памяти навсегда (даже после выхода из open llm vtuber)
+        keep_alive: -1
+        unload_at_exit: True # выгрузить модель из памяти при выходе
+
+      lmstudio_llm:
+        base_url: 'http://localhost:1234/v1'
+        model: 'qwen2.5:latest'
+        temperature: 1.0 # значение от 0 до 2
+
+      openai_llm:
+        llm_api_key: 'Your Open AI API key' # OpenAI API ключ
+        model: 'gpt-4o' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+
+      gemini_llm:
+        llm_api_key: 'Your Gemini API Key' # Gemini API ключ
+        model: 'gemini-2.0-flash-exp' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+
+      zhipu_llm:
+        llm_api_key: 'Your ZhiPu AI API key' # ZhiPu AI API ключ
+        model: 'glm-4-flash' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+
+      deepseek_llm:
+        llm_api_key: 'Your DeepSeek API key' # DeepSeek API ключ
+        model: 'deepseek-chat' # Используемая модель
+        temperature: 0.7 # обратите внимание, что температура DeepSeek находится в диапазоне от 0 до 1
+      
+      mistral_llm:
+        llm_api_key: 'Your Mistral API key' # Mistral API ключ
+        model: 'pixtral-large-latest' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+
+      groq_llm:
+        llm_api_key: 'your groq API key' # Groq API ключ
+        model: 'llama-3.3-70b-versatile' # Используемая модель
+        temperature: 1.0 # температура, значение от 0 до 2
+
+  # === Автоматическое распознавание речи ===
+  asr_config:
+    # варианты модели преобразования речи в текст: 'faster_whisper', 'whisper_cpp', 'whisper', 'azure_asr', 'fun_asr', 'groq_whisper_asr', 'sherpa_onnx_asr'
+    asr_model: 'sherpa_onnx_asr' # Используемая модель распознавания речи
+
+    azure_asr:
+      api_key: 'azure_api_key' # Azure API ключ
+      region: 'eastus' # Регион
+      languages: ['en-US', 'zh-CN', 'ru-RU']  # Список языков для обнаружения
+
+    # Конфигурация Faster Whisper
+    faster_whisper:
+      model_path: 'large-v3-turbo' # путь к модели, имя модели или id модели из hf hub
+      download_root: 'models/whisper' # корневая директория для загрузки моделей
+      language: 'ru' # язык, ru, en, zh или другой. оставьте пустым для автоматического определения.
+      device: 'auto' # устройство, cpu, cuda или auto. faster-whisper не поддерживает mps
+      compute_type: 'int8'
+      prompt: '' # Подсказка для помощи модели понять контекст аудио
+
+    whisper_cpp:
+      # все доступные модели перечислены на https://abdeladim-s.github.io/pywhispercpp/#pywhispercpp.constants.AVAILABLE_MODELS
+      model_name: 'small' # Имя модели
+      model_dir: 'models/whisper' # Директория модели
+      print_realtime: False # Выводить ли в реальном времени
+      print_progress: False # Выводить ли прогресс
+      language: 'auto' # язык, ru, en, zh, auto
+      prompt: '' # Подсказка для помощи модели понять контекст аудио
+
+    whisper:
+      name: 'medium' # Имя модели
+      download_root: 'models/whisper' # корневая директория для загрузки моделей
+      device: 'cpu' # устройство
+      prompt: '' # Подсказка для помощи модели понять контекст аудио
+
+    # FunASR в настоящее время требует подключения к интернету при запуске
+    # для загрузки/проверки моделей. Вы можете отключить интернет после инициализации.
+    # Или вы можете использовать sherpa onnx asr или Faster-Whisper для полностью офлайн-опыта
+    fun_asr:
+      model_name: 'iic/SenseVoiceSmall' # или 'paraformer-zh'
+      vad_model: 'fsmn-vad' # это используется только для работы, если аудио длиннее 30 секунд
+      punc_model: 'ct-punc' # модель пунктуации.
+      device: 'cpu'
+      disable_update: True # должны ли мы проверять обновления FunASR каждый раз при запуске
+      ncpu: 4 # количество потоков для внутренних операций CPU.
+      hub: 'ms' # ms (по умолчанию) для загрузки моделей из ModelScope. Используйте hf для загрузки моделей из Hugging Face.
+      use_itn: False
+      language: 'auto' # ru, zh, en, auto
+
+    # pip install sherpa-onnx
+    # документация: https://k2-fsa.github.io/sherpa/onnx/index.html
+    # загрузка моделей ASR: https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models
+    sherpa_onnx_asr:
+      model_type: 'sense_voice' # 'transducer', 'paraformer', 'nemo_ctc', 'wenet_ctc', 'whisper', 'tdnn_ctc'
+      # Выберите только ОДИН из следующих, в зависимости от model_type:
+      # --- Для model_type: 'transducer' ---
+      # encoder: ''        # Путь к модели энкодера (например, 'path/to/encoder.onnx')
+      # decoder: ''        # Путь к модели декодера (например, 'path/to/decoder.onnx')
+      # joiner: ''         # Путь к модели соединителя (например, 'path/to/joiner.onnx')
+      # --- Для model_type: 'paraformer' ---
+      # paraformer: ''     # Путь к модели paraformer (например, 'path/to/model.onnx')
+      # --- Для model_type: 'nemo_ctc' ---
+      # nemo_ctc: ''        # Путь к модели NeMo CTC (например, 'path/to/model.onnx')
+      # --- Для model_type: 'wenet_ctc' ---
+      # wenet_ctc: ''       # Путь к модели WeNet CTC (например, 'path/to/model.onnx')
+      # --- Для model_type: 'tdnn_ctc' ---
+      # tdnn_model: ''      # Путь к модели TDNN CTC (например, 'path/to/model.onnx')
+      # --- Для model_type: 'whisper' ---
+      # whisper_encoder: '' # Путь к модели энкодера Whisper (например, 'path/to/encoder.onnx')
+      # whisper_decoder: '' # Путь к модели декодера Whisper (например, 'path/to/decoder.onnx')
+      # --- Для model_type: 'sense_voice' ---
+      # Я написал код так, чтобы модель sense voice автоматически загружалась.
+      # Для других моделей вам нужно загрузить их самостоятельно
+      sense_voice: './models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.int8.onnx' # Путь к модели SenseVoice (например, 'path/to/model.onnx')
+      tokens: './models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt' # Путь к tokens.txt (требуется для всех типов моделей)
+      # --- Необязательные параметры (с показанными значениями по умолчанию) ---
+      # hotwords_file: ''     # Путь к файлу горячих слов (если используете горячие слова)
+      # hotwords_score: 1.5   # Оценка для горячих слов
+      # modeling_unit: ''     # Единица моделирования для горячих слов (если применимо)
+      # bpe_vocab: ''         # Путь к словарю BPE (если применимо)
+      num_threads: 4 # Количество потоков
+      # whisper_language: '' # Язык для моделей Whisper (например, 'ru', 'en', 'zh' и т.д. - если используете Whisper)
+      # whisper_task: 'transcribe'  # Задача для моделей Whisper ('transcribe' или 'translate' - если используете Whisper)
+      # whisper_tail_paddings: -1   # Заполнение хвоста для моделей Whisper (если используете Whisper)
+      # blank_penalty: 0.0    # Штраф за пустой символ
+      # decoding_method: 'greedy_search'  # 'greedy_search' или 'modified_beam_search'
+      # debug: False # Включить режим отладки
+      # sample_rate: 16000 # Частота дискретизации (должна соответствовать ожидаемой частоте дискретизации модели)
+      # feature_dim: 80       # Размерность признаков (должна соответствовать ожидаемой размерности признаков модели)
+      use_itn: True # Включить ITN для моделей SenseVoice (должно быть установлено в False, если не используете модели SenseVoice)
+      # Провайдер для вывода (cpu или cuda) (опция cuda требует дополнительных настроек. Пожалуйста, проверьте нашу документацию)
+      provider: 'cpu' 
+
+    groq_whisper_asr:
+      api_key: ''
+      model: 'whisper-large-v3-turbo' # или 'whisper-large-v3'
+      lang: '' # оставьте пустым, и будет автоматически
+
+  # =================== Преобразование текста в речь ===================
+  tts_config:
+    tts_model: 'edge_tts' # Используемая модель преобразования текста в речь
+    # варианты модели преобразования текста в речь:
+    #   'azure_tts', 'pyttsx3_tts', 'edge_tts', 'bark_tts',
+    #   'cosyvoice_tts', 'melo_tts', 'coqui_tts', 'piper_tts',
+    #   'fish_api_tts', 'x_tts', 'gpt_sovits_tts', 'sherpa_onnx_tts'
+    #   'minimax_tts', 'elevenlabs_tts', 'cartesia_tts'
+
+    azure_tts:
+      api_key: 'azure-api-key' # Azure API ключ
+      region: 'eastus' # Регион
+      voice: 'ru-RU-SvetlanaNeural' # Голос
+      pitch: '26' # процент корректировки высоты тона
+      rate: '1' # скорость речи
+
+    bark_tts:
+      voice: 'v2/en_speaker_1' # Голос
+
+    edge_tts:
+      # См. документацию: https://github.com/rany2/edge-tts
+      # Используйте `edge-tts --list-voices` для списка всех доступных голосов
+      voice: 'ru-RU-SvetlanaNeural' # 'en-US-AvaMultilingualNeural' #'zh-CN-XiaoxiaoNeural' # 'ja-JP-NanamiNeural' # 'ru-RU-SvetlanaNeural'
+
+    # pyttsx3_tts не имеет никакой конфигурации.
+
+    piper_tts:
+      model_path: 'models/piper/ru_RU-irina-medium.onnx'  # Путь к файлу модели (.onnx)
+      speaker_id: 0             # ID говорящего (для моделей с несколькими говорящими; оставьте 0 для моделей с одним говорящим)
+      length_scale: 1.0         # Контроль скорости речи (0.5 = в 2 раза быстрее, 1.0 = нормально, 2.0 = в 2 раза медленнее)
+      noise_scale: 0.667        # Степень вариации аудио (0.0–1.0; выше = богаче, разнообразнее; рекомендуется 0.667)
+      noise_w: 0.8              # Вариация стиля речи (0.0–1.0; выше = выразительнее; рекомендуется 0.8)
+      volume: 1.0               # Уровень громкости (0.0–1.0; 1.0 = нормальная громкость)
+      normalize_audio: true     # Нормализовать ли аудио (рекомендуется: true, для более стабильной громкости)
+      use_cuda: false           # Использовать ли ускорение GPU (требует onnxruntime-gpu)
+
+    cosyvoice_tts: # Cosy Voice TTS подключается к gradio webui
+      # См. их документацию для развёртывания и значения следующих конфигураций
+      client_url: 'http://127.0.0.1:50000/' # URL CosyVoice gradio demo webui
+      mode_checkbox_group: '预训练音色'
+      sft_dropdown: '中文女'
+      prompt_text: ''
+      prompt_wav_upload_url: 'https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav'
+      prompt_wav_record_url: 'https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav'
+      instruct_text: ''
+      seed: 0
+      api_name: '/generate_audio'
+
+    cosyvoice2_tts: # Cosy Voice TTS подключается к gradio webui
+      # См. их документацию для развёртывания и значения следующих конфигураций
+      client_url: 'http://127.0.0.1:50000/' # URL CosyVoice gradio demo webui
+      mode_checkbox_group: '3s极速复刻' 
+      sft_dropdown: '' 
+      prompt_text: '' 
+      prompt_wav_upload_url: 'https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav' 
+      prompt_wav_record_url: 'https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav' 
+      instruct_text: '' 
+      stream: False 
+      seed: 0 
+      speed: 1.0 
+      api_name: '/generate_audio' 
+
+    melo_tts:
+      speaker: 'EN-Default' # ZH
+      language: 'EN' # ZH
+      device: 'auto' # Вы можете установить это вручную на 'cpu' или 'cuda' или 'cuda:0' или 'mps'
+      speed: 1.0
+
+    x_tts:
+      api_url: 'http://127.0.0.1:8020/tts_to_audio'
+      speaker_wav: 'female'
+      language: 'en'
+
+    gpt_sovits_tts:
+      # поместите эталонное аудио в корневой путь GPT-Sovits или установите путь здесь
+      api_url: 'http://127.0.0.1:9880/tts'
+      text_lang: 'zh'
+      ref_audio_path: ''
+      prompt_lang: 'zh'
+      prompt_text: ''
+      text_split_method: 'cut5'
+      batch_size: '1'
+      media_type: 'wav'
+      streaming_mode: 'false'
+
+    fish_api_tts:
+      # API ключ для Fish TTS API.
+      api_key: ''
+      # Справочный ID для голоса, который будет использоваться. Получите его на [веб-сайте Fish Audio](https://fish.audio/).
+      reference_id: ''
+      # Либо 'normal', либо 'balanced'. balance быстрее, но качество ниже.
+      latency: 'balanced'
+      base_url: 'https://api.fish.audio'
+
+    coqui_tts:
+      # Имя модели TTS для использования. Если пусто, будет использоваться модель по умолчанию
+      # выполните 'tts --list_models' для списка поддерживаемых моделей для coqui-tts
+      # Некоторые примеры:
+      # - 'tts_models/en/ljspeech/tacotron2-DDC' (один говорящий)
+      # - 'tts_models/zh-CN/baker/tacotron2-DDC-GST' (один говорящий для китайского)
+      # - 'tts_models/multilingual/multi-dataset/your_tts' (несколько говорящих)
+      # - 'tts_models/multilingual/multi-dataset/xtts_v2' (несколько говорящих)
+      model_name: 'tts_models/en/ljspeech/tacotron2-DDC'
+      speaker_wav: ''
+      language: 'en'
+      device: ''
+
+    siliconflow_tts:
+      api_url: "https://api.siliconflow.cn/v1/audio/speech"
+      api_key: "your key"
+      default_model: "FunAudioLLM/CosyVoice2-0.5B"
+      default_voice: "speech:Dreamflowers:5bdstvc39i:xkqldnpasqmoqbakubom your voice name"  # Конфигурация голоса по умолчанию в формате: "speech:MODEL_NAME:VOICE_ID:your voice name"
+      sample_rate: 32000  # Контроль частоты дискретизации вывода. Значения по умолчанию различаются для разных типов вывода видео, следующим образом: opus: Поддерживает 48000 Гц. wav, pcm: Поддерживает 8000, 16000, 24000, 32000, 44100 Гц, по умолчанию 44100 Гц. mp3: Поддерживает 32000, 44100 Гц, по умолчанию 44100 Гц.
+      response_format: "mp3" # Формат вывода аудио. Поддерживаемые форматы: mp3, opus, wav, pcm
+      stream: true
+      speed: 1
+      gain: 0
+
+    # pip install sherpa-onnx
+    # документация: https://k2-fsa.github.io/sherpa/onnx/index.html
+    # загрузка моделей TTS: https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models
+    # см. config_alts для дополнительных примеров
+    sherpa_onnx_tts:
+      vits_model: '/path/to/tts-models/vits-melo-tts-zh_en/model.onnx' # Путь к файлу модели VITS
+      vits_lexicon: '/path/to/tts-models/vits-melo-tts-zh_en/lexicon.txt' # Путь к файлу словаря (необязательно)
+      vits_tokens: '/path/to/tts-models/vits-melo-tts-zh_en/tokens.txt' # Путь к файлу токенов
+      vits_data_dir: '' # '/path/to/tts-models/vits-piper-en_GB-cori-high/espeak-ng-data'  # Путь к данным espeak-ng (необязательно)
+      vits_dict_dir: '/path/to/tts-models/vits-melo-tts-zh_en/dict' # Путь к словарю Jieba (необязательно, для китайского)
+      tts_rule_fsts: '/path/to/tts-models/vits-melo-tts-zh_en/number.fst,/path/to/tts-models/vits-melo-tts-zh_en/phone.fst,/path/to/tts-models/vits-melo-tts-zh_en/date.fst,/path/to/tts-models/vits-melo-tts-zh_en/new_heteronym.fst' # Путь к файлу правил FST (необязательно)
+      max_num_sentences: 2 # Максимальное количество предложений на пакет (или -1 для всех)
+      sid: 1 # ID говорящего (для моделей с несколькими говорящими)
+      provider: 'cpu' # Используйте 'cpu', 'cuda' (GPU) или 'coreml' (Apple)
+      num_threads: 1 # Количество вычислительных потоков
+      speed: 1.0 # Скорость речи (1.0 - нормальная)
+      debug: false # Включить режим отладки (True/False)
+    
+    spark_tts:
+      api_url: 'http://127.0.0.1:6006/' # URL API. Использует встроенный API фронтенда Gradio. Репозиторий: https://github.com/SparkAudio/Spark-TTS
+      api_name:  "voice_clone" # Имя конечной точки. Варианты: voice_clone, voice_creation
+      prompt_wav_upload: "https://uploadstatic.mihoyo.com/ys-obc/2022/11/02/16576950/4d9feb71760c5e8eb5f6c700df12fa0c_6824265537002152805.mp3" # URL эталонного аудио. Укажите, если api_name равно "voice_clone"
+      gender:  "female" # Тип голоса (пол). Укажите, если api_name равно "voice_creation"
+      pitch:  3 # Сдвиг высоты тона (в полутонах) по умолчанию 3, диапазон 1-5. Действительно только если api_name равно "voice_creation"
+      speed:  3 # Скорость голоса (в процентах) по умолчанию 3, диапазон 1-5. Действительно только если api_name равно "voice_creation"
+
+    openai_tts: # Конфигурация для конечных точек TTS, совместимых с OpenAI
+      # Эти настройки переопределяют значения по умолчанию в файле openai_tts.py, если указаны
+      model: 'kokoro' # Имя модели, ожидаемое сервером (например, 'tts-1', 'kokoro')
+      voice: 'af_sky+af_bella' # Имя голоса, ожидаемое сервером (например, 'alloy', 'af_sky+af_bella')
+      api_key: 'not-needed' # API ключ, если требуется сервером
+      base_url: 'http://localhost:8880/v1' # Базовый URL сервера TTS
+      file_extension: 'mp3' # Формат аудиофайла ('mp3' или 'wav')
+
+    # Для более подробной информации см.: https://platform.minimaxi.com/document/Announcement
+    minimax_tts:
+      group_id: '' # Ваш minimax group_id
+      api_key: '' # Ваш minimax api_key
+      # Поддерживаемые модели: 'speech-02-hd', 'speech-02-turbo' (рекомендуется: 'speech-02-turbo')
+      model: 'speech-02-turbo' # имя модели minimax
+      voice_id: 'female-shaonv' # minimax voice id, по умолчанию 'female-shaonv'
+      # Пользовательский словарь произношения, по умолчанию пуст.
+      # Пример: '{"tone": ["测试/(ce4)(shi4)", "危险/dangerous"]}'
+      pronunciation_dict: ''
+
+    elevenlabs_tts:
+      api_key: ''
+      voice_id: '' # ID голоса из ElevenLabs
+      model_id: 'eleven_multilingual_v2' # ID модели (например, eleven_multilingual_v2)
+      output_format: 'mp3_44100_128' # Формат выходного аудио (например, mp3_44100_128)
+      stability: 0.5 # Стабильность голоса (0.0 до 1.0)
+      similarity_boost: 0.5 # Усиление сходства голоса (0.0 до 1.0)
+      style: 0.0 # Преувеличение стиля голоса (0.0 до 1.0)
+      use_speaker_boost: true # Включить усиление говорящего для лучшего качества
+    
+    cartesia_tts:
+      api_key: ''
+      voice_id: '' # ID голоса из Cartesia
+      model_id: 'sonic-3' # ID модели (например, sonic-3)
+      output_format: 'wav' # Формат выходного аудио (например, wav)
+      language: 'en' # Язык выходного голоса (например, en)
+      emotion: 'neutral' # Эмоциональное руководство
+      volume: 1.0 # Громкость голоса (0.5 до 2.0)
+      speed: 1.0 # Скорость голоса (0.6 до 1.5)
+
+  # =================== Обнаружение голосовой активности ===================
+  vad_config:
+    vad_model: null
+
+    silero_vad:
+      orig_sr: 16000 # Исходная частота дискретизации аудио
+      target_sr: 16000 # Целевая частота дискретизации аудио
+      prob_threshold: 0.4 # Порог вероятности для VAD
+      db_threshold: 60 # Порог децибел для VAD
+      required_hits: 3 # Количество последовательных попаданий, необходимое для рассмотрения речи
+      required_misses: 24 # Количество последовательных промахов, необходимое для рассмотрения тишины
+      smoothing_window: 5 # Размер окна сглаживания для VAD
+
+  tts_preprocessor_config:
+    # настройки, касающиеся предварительной обработки текста, который попадает в TTS
+
+    remove_special_char: True # удалить специальные символы, такие как эмодзи, из генерации аудио
+    ignore_brackets: True # игнорировать всё внутри квадратных скобок
+    ignore_parentheses: True # игнорировать всё внутри круглых скобок
+    ignore_asterisks: True # игнорировать всё, обёрнутое в звёздочки
+    ignore_angle_brackets: True # игнорировать всё, обёрнутое в <text>
+
+    translator_config:
+      # Например... вы говорите и читаете субтитры на английском, а TTS говорит на японском или что-то в этом роде
+      translate_audio: False # Предупреждение: вам нужно развернуть DeeplX для использования этого. Иначе произойдёт сбой
+      translate_provider: 'deeplx' # deeplx или tencent
+
+      deeplx:
+        deeplx_target_lang: 'RU'
+        deeplx_api_endpoint: 'http://localhost:1188/v2/translate'
+      
+      #  Тенцент Текстовый перевод  5 миллионов символов в месяц  Не забудьте отключить постоплату, нужно вручную перейти в Консоль машинного перевода > Системные настройки для отключения
+      #   https://cloud.tencent.com/document/product/551/35017
+      #   https://console.cloud.tencent.com/cam/capi
+      tencent:
+        secret_id: ''
+        secret_key: ''
+        region: 'ap-guangzhou'
+        source_lang: 'ru'
+        target_lang: 'ru'
+
+# Интеграция с прямой трансляцией
+live_config:
+  bilibili_live:
+    # Список ID комнат прямой трансляции BiliBili для мониторинга
+    room_ids: [1991478060]
+    # Значение cookie SESSDATA (необязательно, для аутентифицированных запросов)
+    sessdata: ""

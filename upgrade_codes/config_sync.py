@@ -6,6 +6,7 @@ from upgrade_codes.upgrade_core.constants import (
     TEXTS,
     ZH_DEFAULT_CONF,
     EN_DEFAULT_CONF,
+    RU_DEFAULT_CONF,
     TEXTS_COMPARE,
     TEXTS_MERGE,
 )
@@ -23,7 +24,12 @@ class ConfigSynchronizer:
     def __init__(self, lang="en", logger=logging.getLogger(__name__)):
         self.lang = lang
         self.texts = TEXTS[lang]
-        self.default_path = ZH_DEFAULT_CONF if lang == "zh" else EN_DEFAULT_CONF
+        if lang == "zh":
+            self.default_path = ZH_DEFAULT_CONF
+        elif lang == "ru":
+            self.default_path = RU_DEFAULT_CONF
+        else:
+            self.default_path = EN_DEFAULT_CONF
         self.yaml = YAML()
         self.yaml.preserve_quotes = True
         self.user_path = USER_CONF

@@ -33,6 +33,15 @@ class BasicMemoryAgentConfig(I18nMixin, BaseModel):
     segment_method: Literal["regex", "pysbd"] = Field("pysbd", alias="segment_method")
     use_mcpp: Optional[bool] = Field(False, alias="use_mcpp")
     mcp_enabled_servers: Optional[List[str]] = Field([], alias="mcp_enabled_servers")
+    enable_rag_memory: Optional[bool] = Field(False, alias="enable_rag_memory")
+    rag_embedding_model: Optional[str] = Field(
+        "all-MiniLM-L6-v2", alias="rag_embedding_model"
+    )
+    rag_context_threshold: Optional[float] = Field(0.3, alias="rag_context_threshold")
+    rag_max_context_length: Optional[int] = Field(800, alias="rag_max_context_length")
+    rag_device: Optional[Literal["auto", "cpu", "cuda"]] = Field(
+        "auto", alias="rag_device"
+    )
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "llm_provider": Description(
@@ -59,6 +68,31 @@ class BasicMemoryAgentConfig(I18nMixin, BaseModel):
             en="List of MCP servers to enable for the agent",
             zh="为智能体启用 MCP 服务器列表",
             ru="Список MCP серверов для включения для агента",
+        ),
+        "enable_rag_memory": Description(
+            en="Enable RAG (Retrieval-Augmented Generation) for long-term memory search across all conversation histories",
+            zh="启用 RAG（检索增强生成）以在所有对话历史中进行长期记忆搜索",
+            ru="Включить RAG (Retrieval-Augmented Generation) для поиска долгосрочной памяти по всем историям разговоров",
+        ),
+        "rag_embedding_model": Description(
+            en="Sentence transformers model name for generating embeddings (default: 'all-MiniLM-L6-v2')",
+            zh="用于生成嵌入的句子转换器模型名称（默认：'all-MiniLM-L6-v2'）",
+            ru="Название модели sentence transformers для генерации эмбеддингов (по умолчанию: 'all-MiniLM-L6-v2')",
+        ),
+        "rag_context_threshold": Description(
+            en="Minimum similarity score (0-1) for RAG context retrieval. Only memories above this threshold will be included (default: 0.3)",
+            zh="RAG 上下文检索的最小相似度分数（0-1）。只有高于此阈值的记忆才会被包含（默认：0.3）",
+            ru="Минимальный балл схожести (0-1) для извлечения контекста RAG. Только воспоминания выше этого порога будут включены (по умолчанию: 0.3)",
+        ),
+        "rag_max_context_length": Description(
+            en="Maximum characters in RAG context that will be injected into the system prompt (default: 800)",
+            zh="将注入系统提示词的 RAG 上下文的最大字符数（默认：800）",
+            ru="Максимальное количество символов в контексте RAG, которое будет добавлено в системный промпт (по умолчанию: 800)",
+        ),
+        "rag_device": Description(
+            en="Device to use for FAISS operations: 'auto' (detect automatically), 'cpu', or 'cuda' (default: 'auto')",
+            zh="用于 FAISS 操作的设备：'auto'（自动检测）、'cpu' 或 'cuda'（默认：'auto'）",
+            ru="Устройство для операций FAISS: 'auto' (автоматическое определение), 'cpu' или 'cuda' (по умолчанию: 'auto')",
         ),
     }
 

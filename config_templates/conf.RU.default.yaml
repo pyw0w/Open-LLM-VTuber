@@ -69,6 +69,12 @@ character_config:
         # 'Plus' означает, что он имеет возможность вызывать инструменты, используя OpenAI API.
         use_mcpp: True
         mcp_enabled_servers: ["time", "ddg-search"] # Включённые MCP серверы
+        # Включить RAG (Retrieval-Augmented Generation) для поиска долгосрочной памяти по всем историям разговоров
+        enable_rag_memory: True  # Включить RAG для поиска долгосрочной памяти
+        rag_embedding_model: "all-MiniLM-L6-v2"  # Модель sentence transformers для генерации эмбеддингов
+        rag_context_threshold: 0.3  # Минимальный балл схожести (0-1) для извлечения контекста RAG
+        rag_max_context_length: 800  # Максимальное количество символов в контексте RAG
+        rag_device: "auto"  # Устройство для FAISS: 'auto' (автоопределение), 'cpu' или 'cuda' (Примечание: 'cuda' работает только на Linux, не на Windows)
 
       letta_agent:
         host: 'localhost' # Адрес хоста

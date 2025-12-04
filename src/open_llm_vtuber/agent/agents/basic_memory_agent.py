@@ -28,6 +28,7 @@ from ...mcpp.tool_manager import ToolManager
 from ...mcpp.json_detector import StreamJSONDetector
 from ...mcpp.types import ToolCallObject
 from ...mcpp.tool_executor import ToolExecutor
+from ..rag_memory import RAGMemoryManager
 
 
 class BasicMemoryAgent(AgentInterface):
@@ -49,6 +50,8 @@ class BasicMemoryAgent(AgentInterface):
         tool_manager: Optional[ToolManager] = None,
         tool_executor: Optional[ToolExecutor] = None,
         mcp_prompt_string: str = "",
+        rag_memory_manager: Optional[RAGMemoryManager] = None,
+        conf_uid: Optional[str] = None,
     ):
         """Initialize agent with LLM and configuration."""
         super().__init__()
@@ -67,6 +70,9 @@ class BasicMemoryAgent(AgentInterface):
         self._tool_executor = tool_executor
         self._mcp_prompt_string = mcp_prompt_string
         self._json_detector = StreamJSONDetector()
+        self._rag_memory_manager = rag_memory_manager
+        self._conf_uid = conf_uid
+        self._rag_enhanced_system: Optional[str] = None
 
         self._formatted_tools_openai = []
         self._formatted_tools_claude = []
@@ -173,6 +179,20 @@ class BasicMemoryAgent(AgentInterface):
 
         self._memory.append(message_data)
 
+        # Store in RAG memory if enabled
+        if self._rag_memory_manager and self._conf_uid and text_content:
+            from datetime import datetime
+
+            # Map agent roles to RAG roles
+            rag_role = "human" if role == "user" else "ai"
+            timestamp = datetime.now().isoformat(timespec="seconds")
+            self._rag_memory_manager.add_memory(
+                conf_uid=self._conf_uid,
+                role=rag_role,
+                content=text_content,
+                timestamp=timestamp,
+            )
+
     def set_memory_from_history(self, conf_uid: str, history_uid: str) -> None:
         """Load memory from chat history."""
         messages = get_history(conf_uid, history_uid)
@@ -191,6 +211,9 @@ class BasicMemoryAgent(AgentInterface):
             else:
                 logger.warning(f"Skipping invalid message from history: {msg}")
         logger.info(f"Loaded {len(self._memory)} messages from history.")
+
+        # RAG memory manager will automatically load existing memories on initialization
+        # No need to manually add them here as they're already indexed
 
     def handle_interrupt(self, heard_response: str) -> None:
         """Handle user interruption."""
@@ -244,6 +267,23 @@ class BasicMemoryAgent(AgentInterface):
         messages = self._memory.copy()
         user_content = []
         text_prompt = self._to_text_prompt(input_data)
+
+        # Retrieve RAG context if enabled
+        rag_context = ""
+        if self._rag_memory_manager and text_prompt:
+            rag_context = self._rag_memory_manager.search_relevant_context(text_prompt)
+
+        # Inject RAG context into system prompt if available
+        if rag_context:
+            # Store original system prompt and enhance it
+            original_system = self._system
+            enhanced_system = f"{original_system}\n\n{rag_context}"
+            # Temporarily update system prompt for this call
+            # We'll restore it after, but actually we should use it in the LLM call
+            self._rag_enhanced_system = enhanced_system
+        else:
+            self._rag_enhanced_system = None
+
         if text_prompt:
             user_content.append({"type": "text", "text": text_prompt})
 
@@ -299,7 +339,11 @@ class BasicMemoryAgent(AgentInterface):
         current_assistant_message_content = []
 
         while True:
-            stream = self._llm.chat_completion(messages, self._system, tools=tools)
+            # Use RAG-enhanced system prompt if available
+            system_prompt = (
+                getattr(self, "_rag_enhanced_system", None) or self._system
+            )
+            stream = self._llm.chat_completion(messages, system_prompt, tools=tools)
             pending_tool_calls.clear()
             current_assistant_message_content.clear()
 
@@ -412,17 +456,22 @@ class BasicMemoryAgent(AgentInterface):
         current_system_prompt = self._system
 
         while True:
+            # Get RAG-enhanced system prompt if available
+            base_system = (
+                getattr(self, "_rag_enhanced_system", None) or self._system
+            )
+
             if self.prompt_mode_flag:
                 if self._mcp_prompt_string:
                     current_system_prompt = (
-                        f"{self._system}\n\n{self._mcp_prompt_string}"
+                        f"{base_system}\n\n{self._mcp_prompt_string}"
                     )
                 else:
                     logger.warning("Prompt mode active but mcp_prompt_string is empty!")
-                    current_system_prompt = self._system
+                    current_system_prompt = base_system
                 tools_for_api = None
             else:
-                current_system_prompt = self._system
+                current_system_prompt = base_system
                 tools_for_api = tools
 
             stream = self._llm.chat_completion(
@@ -597,6 +646,8 @@ class BasicMemoryAgent(AgentInterface):
             """Process chat with memory and tools."""
             self.reset_interrupt()
             self.prompt_mode_flag = False
+            # Reset RAG enhanced system prompt for this turn
+            self._rag_enhanced_system = None
 
             messages = self._to_messages(input_data)
             tools = None
@@ -643,7 +694,11 @@ class BasicMemoryAgent(AgentInterface):
                 return
             else:
                 logger.info("Starting simple chat completion.")
-                token_stream = self._llm.chat_completion(messages, self._system)
+                # Use RAG-enhanced system prompt if available
+                system_prompt = (
+                    getattr(self, "_rag_enhanced_system", None) or self._system
+                )
+                token_stream = self._llm.chat_completion(messages, system_prompt)
                 complete_response = ""
                 async for event in token_stream:
                     text_chunk = ""

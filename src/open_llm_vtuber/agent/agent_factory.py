@@ -10,6 +10,7 @@ from .agents.letta_agent import LettaAgent
 from ..mcpp.tool_manager import ToolManager
 from ..mcpp.tool_executor import ToolExecutor
 from typing import Optional
+from .rag_memory import RAGMemoryManager
 
 
 class AgentFactory:
@@ -66,6 +67,46 @@ class AgentFactory:
             tool_manager: Optional[ToolManager] = kwargs.get("tool_manager")
             tool_executor: Optional[ToolExecutor] = kwargs.get("tool_executor")
             mcp_prompt_string: str = kwargs.get("mcp_prompt_string", "")
+            conf_uid: Optional[str] = kwargs.get("conf_uid")
+
+            # Initialize RAG memory manager if enabled
+            rag_memory_manager: Optional[RAGMemoryManager] = None
+            enable_rag_memory = basic_memory_settings.get("enable_rag_memory", False)
+            if enable_rag_memory and conf_uid:
+                try:
+                    rag_embedding_model = basic_memory_settings.get(
+                        "rag_embedding_model", "all-MiniLM-L6-v2"
+                    )
+                    rag_context_threshold = basic_memory_settings.get(
+                        "rag_context_threshold", 0.3
+                    )
+                    rag_max_context_length = basic_memory_settings.get(
+                        "rag_max_context_length", 800
+                    )
+                    rag_device = basic_memory_settings.get("rag_device", "auto")
+
+                    logger.info(
+                        f"Initializing RAG memory manager for conf_uid: {conf_uid}"
+                    )
+                    rag_memory_manager = RAGMemoryManager(
+                        conf_uid=conf_uid,
+                        embedding_model=rag_embedding_model,
+                        context_threshold=rag_context_threshold,
+                        max_context_length=rag_max_context_length,
+                        device=rag_device,
+                    )
+                    logger.info("RAG memory manager initialized successfully")
+                except Exception as e:
+                    logger.error(
+                        f"Failed to initialize RAG memory manager: {e}. "
+                        "Continuing without RAG memory."
+                    )
+                    rag_memory_manager = None
+            elif enable_rag_memory and not conf_uid:
+                logger.warning(
+                    "RAG memory is enabled but conf_uid is not provided. "
+                    "RAG memory will be disabled."
+                )
 
             # Create the agent with the LLM and live2d_model
             return BasicMemoryAgent(
@@ -83,6 +124,8 @@ class AgentFactory:
                 tool_manager=tool_manager,
                 tool_executor=tool_executor,
                 mcp_prompt_string=mcp_prompt_string,
+                rag_memory_manager=rag_memory_manager,
+                conf_uid=conf_uid,
             )
 
         elif conversation_agent_choice == "mem0_agent":

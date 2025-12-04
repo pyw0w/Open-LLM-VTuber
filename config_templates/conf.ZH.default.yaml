@@ -68,6 +68,12 @@ character_config:
         # 'Plus' 意味着它包含了通过 OpenAI API 调用工具的能力。
         use_mcpp: False
         mcp_enabled_servers: ["time", "ddg-search"] # 启用的 MCP 服务器
+        # 启用 RAG（检索增强生成）以在所有对话历史中进行长期记忆搜索
+        enable_rag_memory: True  # 启用 RAG 进行长期记忆搜索
+        rag_embedding_model: "all-MiniLM-L6-v2"  # 用于生成嵌入的句子转换器模型
+        rag_context_threshold: 0.3  # RAG 上下文检索的最小相似度分数（0-1）
+        rag_max_context_length: 800  # RAG 上下文的最大字符数
+        rag_device: "auto"  # FAISS 设备：'auto'（自动检测）、'cpu' 或 'cuda'（注意：'cuda' 仅在 Linux 上可用，Windows 不支持）
 
       hume_ai_agent:
         api_key: ''

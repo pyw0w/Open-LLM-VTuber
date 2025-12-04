@@ -8,7 +8,7 @@ dependencies = [
     "anthropic>=0.40.0",
     "azure-cognitiveservices-speech>=1.41.1",
     "chardet>=5.2.0",
-    "cartesia>=2.0.0", 
+    "cartesia>=2.0.0",
     "edge-tts>=7.0.0",
     "elevenlabs>=1.0.0",
     "fastapi[standard]>=0.115.8",
@@ -29,6 +29,7 @@ dependencies = [
     "ruamel-yaml>=0.18.10",
     "ruff>=0.8.6",
     "scipy>=1.14.1",
+    "sentence-transformers>=2.2.0",
     "sherpa-onnx>=1.10.39",
     "soundfile>=0.12.1",
     "tomli>=2.2.1",
@@ -40,6 +41,7 @@ dependencies = [
     "websocket-client>=1.8.0",
     "letta-client>=0.1.100",
     "duckduckgo-mcp-server>=0.1.1",
+    "faiss-cpu>=1.13.0",
 ]
 
 [project.optional-dependencies]

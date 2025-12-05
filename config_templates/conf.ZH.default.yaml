@@ -74,6 +74,7 @@ character_config:
         rag_context_threshold: 0.3  # RAG 上下文检索的最小相似度分数（0-1）
         rag_max_context_length: 800  # RAG 上下文的最大字符数
         rag_device: "auto"  # FAISS 设备：'auto'（自动检测）、'cpu' 或 'cuda'（注意：'cuda' 仅在 Linux 上可用，Windows 不支持）
+        rag_use_memory_filtering: True  # 启用内存过滤以仅存储重要/关键时刻，而不是所有消息。启用后，旧的内存将在首次运行时清除。
 
       hume_ai_agent:
         api_key: ''

@@ -11,6 +11,7 @@ from ..mcpp.tool_manager import ToolManager
 from ..mcpp.tool_executor import ToolExecutor
 from typing import Optional
 from .rag_memory import RAGMemoryManager
+from .memory_extractor import create_memory_extractor
 
 
 class AgentFactory:
@@ -72,6 +73,10 @@ class AgentFactory:
             # Initialize RAG memory manager if enabled
             rag_memory_manager: Optional[RAGMemoryManager] = None
             enable_rag_memory = basic_memory_settings.get("enable_rag_memory", False)
+            use_memory_filtering = basic_memory_settings.get(
+                "rag_use_memory_filtering", True
+            )
+            
             if enable_rag_memory and conf_uid:
                 try:
                     rag_embedding_model = basic_memory_settings.get(
@@ -85,8 +90,23 @@ class AgentFactory:
                     )
                     rag_device = basic_memory_settings.get("rag_device", "auto")
 
+                    # Create memory extractor if filtering is enabled
+                    memory_extractor = None
+                    if use_memory_filtering:
+                        logger.info("Creating memory extractor for RAG filtering")
+                        memory_extractor = create_memory_extractor(llm)
+                        if not memory_extractor:
+                            logger.warning(
+                                "Failed to create memory extractor. "
+                                "Memory filtering will be disabled."
+                            )
+                            use_memory_filtering = False
+                        else:
+                            logger.info("Memory extractor created successfully")
+
                     logger.info(
-                        f"Initializing RAG memory manager for conf_uid: {conf_uid}"
+                        f"Initializing RAG memory manager for conf_uid: {conf_uid} "
+                        f"(filtering: {use_memory_filtering})"
                     )
                     rag_memory_manager = RAGMemoryManager(
                         conf_uid=conf_uid,
@@ -94,6 +114,8 @@ class AgentFactory:
                         context_threshold=rag_context_threshold,
                         max_context_length=rag_max_context_length,
                         device=rag_device,
+                        memory_extractor=memory_extractor,
+                        use_memory_filtering=use_memory_filtering,
                     )
                     logger.info("RAG memory manager initialized successfully")
                 except Exception as e:

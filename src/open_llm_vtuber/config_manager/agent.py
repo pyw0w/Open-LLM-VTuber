@@ -42,6 +42,9 @@ class BasicMemoryAgentConfig(I18nMixin, BaseModel):
     rag_device: Optional[Literal["auto", "cpu", "cuda"]] = Field(
         "auto", alias="rag_device"
     )
+    rag_use_memory_filtering: Optional[bool] = Field(
+        True, alias="rag_use_memory_filtering"
+    )
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "llm_provider": Description(
@@ -93,6 +96,11 @@ class BasicMemoryAgentConfig(I18nMixin, BaseModel):
             en="Device to use for FAISS operations: 'auto' (detect automatically), 'cpu', or 'cuda' (default: 'auto')",
             zh="用于 FAISS 操作的设备：'auto'（自动检测）、'cpu' 或 'cuda'（默认：'auto'）",
             ru="Устройство для операций FAISS: 'auto' (автоматическое определение), 'cpu' или 'cuda' (по умолчанию: 'auto')",
+        ),
+        "rag_use_memory_filtering": Description(
+            en="Enable memory filtering to store only important/key moments instead of all messages (default: True). When enabled, old memories will be cleared on first run.",
+            zh="启用内存过滤以仅存储重要/关键时刻，而不是所有消息（默认：True）。启用后，旧的内存将在首次运行时清除。",
+            ru="Включить фильтрацию памяти для сохранения только важных/ключевых моментов вместо всех сообщений (по умолчанию: True). При включении старые воспоминания будут очищены при первом запуске.",
         ),
     }
 

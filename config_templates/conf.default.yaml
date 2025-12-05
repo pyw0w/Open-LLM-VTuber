@@ -74,6 +74,7 @@ character_config:
         rag_context_threshold: 0.3  # Minimum similarity score (0-1) for RAG context retrieval
         rag_max_context_length: 800  # Maximum characters in RAG context
         rag_device: "auto"  # Device for FAISS: 'auto' (detect), 'cpu', or 'cuda' (Note: 'cuda' only works on Linux, not Windows)
+        rag_use_memory_filtering: True  # Enable memory filtering to store only important/key moments instead of all messages. When enabled, old memories will be cleared on first run.
 
       letta_agent:
         host: 'localhost' # Host address

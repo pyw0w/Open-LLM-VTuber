@@ -41,6 +41,12 @@ except ImportError:
 
 from ..chat_history_manager import get_history, get_history_list
 
+# Type checking import (avoid circular import)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .memory_extractor import MemoryExtractor
+
 
 def _sanitize_path_component(component: str) -> str:
     """Sanitize and validate a path component."""
@@ -61,6 +67,8 @@ class RAGMemoryManager:
         context_threshold: float = 0.3,
         max_context_length: int = 800,
         device: str = "auto",
+        memory_extractor: Optional["MemoryExtractor"] = None,
+        use_memory_filtering: bool = False,
     ):
         """Initialize RAG memory manager.
 
@@ -70,6 +78,8 @@ class RAGMemoryManager:
             context_threshold: Minimum similarity score (0-1) for retrieval
             max_context_length: Maximum characters in retrieved context
             device: Device to use for FAISS ('auto', 'cpu', or 'cuda')
+            memory_extractor: Optional memory extractor for filtering memories
+            use_memory_filtering: Whether to use memory filtering (clears old memories if True)
         """
         if not FAISS_AVAILABLE or SentenceTransformer is None or faiss is None or np is None:
             error_msg = (
@@ -128,6 +138,8 @@ class RAGMemoryManager:
         self.context_threshold = context_threshold
         self.max_context_length = max_context_length
         self.gpu_resource = None
+        self.memory_extractor = memory_extractor
+        self.use_memory_filtering = use_memory_filtering
 
         # Initialize GPU resource if using CUDA
         if self.device == "cuda":
@@ -160,11 +172,20 @@ class RAGMemoryManager:
         self.index: Optional[faiss.Index] = None
         self.metadata: List[Dict[str, Any]] = []
 
+        # If memory filtering is enabled and index exists, clear old memories first
+        if self.use_memory_filtering and os.path.exists(self.index_path):
+            logger.info(
+                "Memory filtering is enabled. Clearing old memories to start fresh."
+            )
+            self._clear_all_memories()
+
         # Load existing index or create new one
+        # After clearing, this will create a new index
         self._load_or_create_index()
 
-        # Load existing memories from chat history
-        self._load_existing_memories()
+        # Load existing memories from chat history (only if filtering is disabled)
+        if not self.use_memory_filtering:
+            self._load_existing_memories()
 
     def _load_or_create_index(self) -> None:
         """Load existing FAISS index or create a new one."""
@@ -220,6 +241,23 @@ class RAGMemoryManager:
         except Exception as e:
             logger.error(f"Failed to save RAG index: {e}")
 
+    def _clear_all_memories(self) -> None:
+        """Clear all existing memories from index and metadata."""
+        try:
+            # Reset index and metadata
+            self.index = None
+            self.metadata = []
+            
+            # Remove existing index files
+            if os.path.exists(self.index_path):
+                os.remove(self.index_path)
+            if os.path.exists(self.metadata_path):
+                os.remove(self.metadata_path)
+            
+            logger.info("Cleared all existing RAG memories")
+        except Exception as e:
+            logger.error(f"Failed to clear memories: {e}")
+
     def _load_existing_memories(self) -> None:
         """Load all existing conversation histories and index them."""
         try:
@@ -240,8 +278,8 @@ class RAGMemoryManager:
                         if self._memory_exists(content, role, timestamp):
                             continue
 
-                        # Add to index
-                        self.add_memory(
+                        # Add to index directly (bypass filtering for old memories)
+                        self._add_memory_internal(
                             conf_uid=self.conf_uid,
                             role=role,
                             content=content,
@@ -266,7 +304,7 @@ class RAGMemoryManager:
                 return True
         return False
 
-    def add_memory(
+    async def add_memory(
         self, conf_uid: str, role: str, content: str, timestamp: str = ""
     ) -> None:
         """Add a memory to the vector store.
@@ -280,7 +318,67 @@ class RAGMemoryManager:
         if not content or not content.strip():
             return
 
-        # Skip if already exists
+        # If memory filtering is enabled, extract important memories first
+        if self.use_memory_filtering and self.memory_extractor:
+            try:
+                # Extract important memories from the message
+                extracted = await self.memory_extractor.extract_memories(
+                    role=role, content=content
+                )
+                
+                # If importance is 0 or no memories extracted, skip saving
+                if extracted.get("importance", 0.0) == 0.0 or not extracted.get("memories"):
+                    logger.debug(f"Skipping memory storage: importance={extracted.get('importance', 0.0)}")
+                    return
+                
+                # Store each extracted memory entry
+                for memory_entry in extracted.get("memories", []):
+                    summary = memory_entry.get("summary", "")
+                    if not summary or not summary.strip():
+                        continue
+                    
+                    # Use summary as content for storage
+                    self._add_memory_internal(
+                        conf_uid=conf_uid,
+                        role=role,
+                        content=summary,
+                        timestamp=timestamp,
+                        tags=memory_entry.get("tags", []),
+                    )
+            except Exception as e:
+                logger.error(f"Error during memory extraction: {e}")
+                # Fail-safe: don't save anything if extraction fails
+                return
+        else:
+            # Original behavior: save message directly
+            self._add_memory_internal(
+                conf_uid=conf_uid,
+                role=role,
+                content=content,
+                timestamp=timestamp,
+            )
+
+    def _add_memory_internal(
+        self,
+        conf_uid: str,
+        role: str,
+        content: str,
+        timestamp: str = "",
+        tags: Optional[List[str]] = None,
+    ) -> None:
+        """Internal method to add a memory to the vector store.
+
+        Args:
+            conf_uid: Configuration unique identifier
+            role: Message role ("human" or "ai")
+            content: Message content to store
+            timestamp: Optional timestamp string
+            tags: Optional tags for the memory
+        """
+        if not content or not content.strip():
+            return
+
+        # Skip if already exists (check by content and role)
         if self._memory_exists(content, role, timestamp):
             return
 
@@ -304,13 +402,15 @@ class RAGMemoryManager:
             self.index.add(embedding)
 
             # Store metadata
-            self.metadata.append(
-                {
-                    "role": role,
-                    "content": content,
-                    "timestamp": timestamp,
-                }
-            )
+            metadata_entry = {
+                "role": role,
+                "content": content,
+                "timestamp": timestamp,
+            }
+            if tags:
+                metadata_entry["tags"] = tags
+            
+            self.metadata.append(metadata_entry)
 
             # Save periodically (every 10 memories)
             if len(self.metadata) % 10 == 0:

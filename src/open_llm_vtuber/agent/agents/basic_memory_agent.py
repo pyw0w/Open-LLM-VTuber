@@ -179,19 +179,35 @@ class BasicMemoryAgent(AgentInterface):
 
         self._memory.append(message_data)
 
-        # Store in RAG memory if enabled
+        # Store in RAG memory if enabled (asynchronously in background)
         if self._rag_memory_manager and self._conf_uid and text_content:
+            import asyncio
             from datetime import datetime
 
             # Map agent roles to RAG roles
             rag_role = "human" if role == "user" else "ai"
             timestamp = datetime.now().isoformat(timespec="seconds")
-            self._rag_memory_manager.add_memory(
-                conf_uid=self._conf_uid,
-                role=rag_role,
-                content=text_content,
-                timestamp=timestamp,
-            )
+            
+            # Create background task for async memory storage
+            async def store_memory_task():
+                try:
+                    await self._rag_memory_manager.add_memory(
+                        conf_uid=self._conf_uid,
+                        role=rag_role,
+                        content=text_content,
+                        timestamp=timestamp,
+                    )
+                except Exception as e:
+                    logger.error(f"Error storing memory in RAG: {e}")
+            
+            # Try to create task if we're in an async context
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(store_memory_task())
+            except RuntimeError:
+                # Not in async context, skip async storage
+                # This should not happen in normal flow, but fail gracefully
+                logger.warning("Cannot store memory: not in async context")
 
     def set_memory_from_history(self, conf_uid: str, history_uid: str) -> None:
         """Load memory from chat history."""
